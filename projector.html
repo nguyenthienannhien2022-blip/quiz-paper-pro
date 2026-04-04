@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn Hình Máy Chiếu - QuizPaperMode</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .status {
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .timer-text {
+            font-size: 26px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .timer-container {
+            width: 100%;
+            height: 25px;
+            background-color: #ecf0f1;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: none;
+            border: 2px solid #bdc3c7;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: #2ecc71;
+            transition: width 1s linear, background-color 0.5s ease;
+        }
+
+        .question-board {
+            background-color: #e8f4f8;
+            border: 2px solid #b3d4fc;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .q-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .q-images {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .q-images img {
+            max-width: 500px;
+            max-height: 350px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .opt-box {
+            background: white;
+            padding: 15px 25px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 10px;
+            border: 2px solid #bdc3c7;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .opt-label {
+            display: inline-block;
+            min-width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background: #34495e;
+            color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .student-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 2px dashed #bdc3c7;
+        }
+
+        .student-card {
+            width: 130px;
+            height: 90px;
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 5px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .student-card.submitted {
+            background-color: #f39c12;
+            color: white;
+            border-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        .student-card.correct {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+            transform: scale(1.1);
+        }
+
+        .student-card.incorrect {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+            transform: scale(0.95);
+        }
+    </style>
+
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header-bar">
+            <h1>📊 Bảng Kết Quả Trực Tiếp</h1>
+            <div class="status" id="connection-status">⏳ Đang kết nối tới Máy chủ...</div>
+        </div>
+
+        <div class="timer-text" id="timer-text">⏳ Thời gian còn lại: <span id="time-left">0</span> giây</div>
+        <div class="timer-container" id="timer-container">
+            <div class="timer-bar" id="timer-bar"></div>
+        </div>
+
+        <div class="question-board" id="question-board">
+            <div class="q-text" style="color: #7f8c8d; font-size: 24px;">
+                Đang chờ giáo viên phát đề...
+            </div>
+        </div>
+
+        <div class="student-grid" id="student-grid"></div>
+    </div>
+
+    <script>
+        let studentSubmissions = {};
+        let studentNames = [];
+        let countdownInterval;
+
+        // ==========================================
+        // HỆ THỐNG ÂM THANH DÙNG FILE MP3
+        // ==========================================
+        const audioTinhGio = new Audio('/tinh-gio-choi.mp3');
+        const audioHetGio = new Audio('/hetgio.mp3');
+        const audioChucMung = new Audio('/chucmung.mp3');
+
+        // [TINH CHỈNH]: Cho phép nhạc tính giờ tự động lặp lại (loop) nếu đồng hồ đếm lâu hơn bài nhạc
+        audioTinhGio.loop = true;
+
+        // Hàm giúp dập tắt mọi âm thanh đang phát để tránh bị đè nhạc lên nhau
+        function stopAllAudio() {
+            audioTinhGio.pause(); audioTinhGio.currentTime = 0;
+            audioHetGio.pause(); audioHetGio.currentTime = 0;
+            audioChucMung.pause(); audioChucMung.currentTime = 0;
+        }
+
+        // Tạo tương tác rỗng để mở khóa chính sách Autoplay của trình duyệt
+        document.body.addEventListener('click', () => {
+            console.log("Sẵn sàng phát nhạc nền mp3!");
+        });
+
+        // ==========================================
+
+        function getStudentLabel(id) {
+            if (studentNames && studentNames[id - 1]) return studentNames[id - 1];
+            return `ID: ${id}`;
+        }
+
+        const grid = document.getElementById('student-grid');
+        for (let i = 1; i <= 10; i++) {
+            const card = document.createElement('div');
+            card.className = 'student-card';
+            card.id = `student-${i}`;
+            card.innerText = getStudentLabel(i);
+            grid.appendChild(card);
+        }
+
+        const statusText = document.getElementById('connection-status');
+        const socket = io();
+
+        socket.on('connect', () => {
+            statusText.innerHTML = "🟢 Đã kết nối! <br><span style='font-size:12px;color:#7f8c8d;'>(Nhấp chuột 1 lần vào vùng trắng để bật âm thanh)</span>";
+            statusText.style.color = "#27ae60";
+        });
+
+        socket.on('disconnect', () => {
+            statusText.innerText = "🔴 Mất kết nối tới Máy chủ!";
+            statusText.style.color = "#c0392b";
+        });
+
+        socket.on('update_projector', (data) => {
+            studentSubmissions[data.studentId] = data.answer;
+            const studentCard = document.getElementById(`student-${data.studentId}`);
+            if (studentCard) {
+                studentCard.className = 'student-card submitted';
+                studentCard.innerText = `${getStudentLabel(data.studentId)}\n✔️`;
+            }
+        });
+
+        socket.on('execute_command', (data) => {
+            if (data.action === 'update_class_list') {
+                studentNames = data.students;
+                for (let i = 1; i <= 10; i++) {
+                    const card = document.getElementById(`student-${i}`);
+                    if (card) {
+                        let currentStatus = "";
+                        if (card.classList.contains('submitted')) currentStatus = "\n✔️";
+                        else if (card.classList.contains('correct') || card.classList.contains('incorrect')) {
+                            currentStatus = `\n${studentSubmissions[i]}`;
+                        }
+                        card.innerText = getStudentLabel(i) + currentStatus;
+                    }
+                }
+            }
+
+            if (data.action === 'start_timer') {
+                clearInterval(countdownInterval);
+
+                // [ÂM THANH] Bắt đầu bật nhạc nền tính giờ
+                stopAllAudio();
+                audioTinhGio.play().catch(e => console.log("Yêu cầu click chuột để bật nhạc"));
+
+                let duration = data.duration;
+                let timeLeft = duration;
+
+                const timerContainer = document.getElementById('timer-container');
+                const timerBar = document.getElementById('timer-bar');
+                const timerTextUI = document.getElementById('timer-text');
+
+                timerContainer.style.display = 'block';
+                timerTextUI.style.display = 'block';
+                timerTextUI.innerHTML = `⏳ Thời gian còn lại: <span id="time-left">${timeLeft}</span> giây`;
+
+                timerBar.style.transition = 'none';
+                timerBar.style.width = '100%';
+                timerBar.style.backgroundColor = '#2ecc71';
+
+                void timerBar.offsetWidth;
+                timerBar.style.transition = 'width 1s linear, background-color 0.5s ease';
+
+                countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('time-left').innerText = timeLeft;
+
+                    let percentage = (timeLeft / duration) * 100;
+                    timerBar.style.width = percentage + '%';
+
+                    if (percentage <= 50 && percentage > 20) {
+                        timerBar.style.backgroundColor = '#f1c40f'; // Vàng
+                    } else if (percentage <= 20) {
+                        timerBar.style.backgroundColor = '#e74c3c'; // Đỏ
+                    }
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById('time-left').innerText = "0";
+                        timerTextUI.innerHTML = "⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI!";
+
+                        // [ÂM THANH] Tắt nhạc tính giờ, Bật còi hết giờ
+                        stopAllAudio();
+                        audioHetGio.play().catch(e => console.log("Lỗi âm thanh hết giờ"));
+                    }
+                }, 1000);
+            }
+
+            if (data.action === 'show_question') {
+                // Tắt mọi âm thanh khi hiện câu mới
+                stopAllAudio();
+
+                clearInterval(countdownInterval);
+                document.getElementById('timer-container').style.display = 'none';
+                document.getElementById('timer-text').style.display = 'none';
+
+                const q = data.questionData;
+                const board = document.getElementById('question-board');
+                let imgHTML = '';
+                if (q.imageUrl && q.imageUrl.trim() !== '') {
+                    imgHTML = `<div class="q-images"><img src="${q.imageUrl}"></div>`;
+                }
+
+                let optionsHTML = `
+                    <div class="opt-box"><span class="opt-label">A</span> <div>${q.options.A}</div></div>
+                    <div class="opt-box"><span class="opt-label">B</span> <div>${q.options.B}</div></div>
+                `;
+                if (q.type !== 'tf') {
+                    optionsHTML += `
+                        <div class="opt-box"><span class="opt-label">C</span> <div>${q.options.C}</div></div>
+                        <div class="opt-box"><span class="opt-label">D</span> <div>${q.options.D}</div></div>
+                    `;
+                }
+
+                board.innerHTML = `<div class="q-text">${q.text}</div>${imgHTML}<div class="options-grid">${optionsHTML}</div>`;
+
+                renderMathInElement(board, {
+                    delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
+                    throwOnError: false
+                });
+            }
+
+            if (data.action === 'reveal') {
+                clearInterval(countdownInterval);
+
+                // [ÂM THANH] Tắt mọi âm thanh, Bật tiếng Chúc mừng vang dội
+                stopAllAudio();
+                audioChucMung.play().catch(e => console.log("Lỗi âm thanh chúc mừng"));
+
+                const correctQuestionAnswer = data.correctAnswer;
+                for (const [id, answer] of Object.entries(studentSubmissions)) {
+                    const card = document.getElementById(`student-${id}`);
+                    if (!card) continue;
+
+                    if (answer === correctQuestionAnswer) {
+                        card.className = 'student-card correct';
+                        card.innerText = `${getStudentLabel(id)}\n${answer}`;
+                    } else {
+                        card.className = 'student-card incorrect';
+                        card.innerText = `${getStudentLabel(id)}\n${answer}`;
+                    }
+                }
+            }
+
+            if (data.action === 'reset') {
+                // Tắt âm thanh
+                stopAllAudio();
+
+                clearInterval(countdownInterval);
+                document.getElementById('timer-container').style.display = 'none';
+                document.getElementById('timer-text').style.display = 'none';
+
+                studentSubmissions = {};
+                for (let i = 1; i <= 10; i++) {
+                    const card = document.getElementById(`student-${i}`);
+                    if (card) {
+                        card.className = 'student-card';
+                        card.innerText = getStudentLabel(i);
+                    }
+                }
+                document.getElementById('question-board').innerHTML = `
+                    <div class="q-text" style="color: #7f8c8d; font-size: 24px;">
+                        Đang chờ giáo viên phát đề...
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

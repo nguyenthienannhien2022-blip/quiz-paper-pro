@@ -1,0 +1,28 @@
+[
+    {
+        "id": "Q1775307603638",
+        "type": "4opts",
+        "text": "Nguyễn Văn Thiện",
+        "imageUrl": "",
+        "options": {
+            "A": "đsds",
+            "B": "dsds",
+            "C": "vvsv",
+            "D": "few"
+        },
+        "correct": "B"
+    },
+    {
+        "id": "Q1775308881866",
+        "type": "4opts",
+        "text": "gdgdg",
+        "imageUrl": "",
+        "options": {
+            "A": "fxf",
+            "B": "sfs",
+            "C": "sfsf",
+            "D": "vcvx"
+        },
+        "correct": "A"
+    }
+]

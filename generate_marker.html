@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Thẻ Đáp Án Học Sinh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            padding: 50px;
+        }
+
+        .marker-container {
+            display: inline-block;
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+        }
+
+        /* Mặc định thư viện js-aruco dùng canvas để vẽ mã */
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/cv.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/aruco.js"></script>
+</head>
+
+<body>
+
+    <h2>Thẻ Đáp Án Chuẩn Cho Hệ Thống</h2>
+    <p>Hãy dùng trang web scanner.html để quét thẻ số 5 bên dưới nhé!</p>
+
+    <div class="marker-container">
+        <h3 id="marker-id-text">Học sinh ID: 5</h3>
+        <canvas id="marker-canvas" width="250" height="250"></canvas>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const canvas = document.getElementById('marker-canvas');
+            const context = canvas.getContext('2d');
+
+            // Khởi tạo kích thước thẻ
+            const size = 250;
+            // Chọn ID học sinh (ví dụ học sinh số 5)
+            const studentId = 5;
+
+            // Tạo ma trận ảnh của thẻ ArUco với ID = 5
+            const image = AR.Marker.create(studentId, 250); // Thư viện sẽ tạo thẻ 250x250 pixel
+
+            // Vẽ thẻ đen trắng lên màn hình
+            const imageData = context.createImageData(size, size);
+            for (let i = 0; i < image.length; i++) {
+                let color = image[i] === 1 ? 255 : 0; // 1 là trắng, 0 là đen
+                imageData.data[(i * 4) + 0] = color; // Đỏ
+                imageData.data[(i * 4) + 1] = color; // Xanh lá
+                imageData.data[(i * 4) + 2] = color; // Xanh dương
+                imageData.data[(i * 4) + 3] = 255;   // Độ mờ (Alpha)
+            }
+
+            context.putImageData(imageData, 0, 0);
+        };
+    </script>
+</body>
+
+</html>
