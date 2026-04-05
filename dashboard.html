@@ -4,14 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điều Khiển Của Giáo Viên - Studio Đề Thi</title>
+    <title>Studio Soạn Đề - Quiz Paper Pro</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
-
     <script src="/socket.io/socket.io.js"></script>
 
     <style>
@@ -29,7 +26,7 @@
         }
 
         .header h2 {
-            color: #2c3e50;
+            color: #8e44ad;
             margin: 0;
             font-size: 28px;
         }
@@ -48,7 +45,6 @@
             margin: 0 auto;
         }
 
-        /* Các khối giao diện chung */
         .panel {
             background: white;
             padding: 20px;
@@ -117,7 +113,6 @@
             font-family: monospace;
         }
 
-        /* Nút bấm */
         .btn {
             padding: 10px 15px;
             font-size: 16px;
@@ -151,24 +146,6 @@
             background-color: #f39c12;
         }
 
-        .btn-danger {
-            background-color: #e74c3c;
-            margin-top: 10px;
-        }
-
-        /* Nút xuất Excel */
-        .btn-excel {
-            background-color: #107c41;
-            margin-top: 15px;
-            padding: 15px;
-            font-size: 18px;
-        }
-
-        .btn-excel:hover {
-            background-color: #0b5e31;
-        }
-
-        /* Giao diện Xem trước */
         #live-preview {
             background: #ecf0f1;
             padding: 15px;
@@ -201,7 +178,6 @@
             font-weight: bold;
         }
 
-        /* Ngân hàng câu hỏi */
         .question-list {
             list-style: none;
             padding: 0;
@@ -229,34 +205,13 @@
             display: flex;
             gap: 10px;
         }
-
-        .q-item-actions button {
-            flex: 1;
-            padding: 8px;
-            font-size: 14px;
-        }
-
-        .control-room {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .control-room h3 {
-            color: #f1c40f;
-            margin-top: 0;
-        }
     </style>
 </head>
 
 <body>
 
     <div class="header">
-        <h2>👨‍🏫 Bảng Điều Khiển - Studio Tạo Đề</h2>
+        <h2>⚙️ STUDIO SOẠN ĐỀ & CÀI ĐẶT LỚP</h2>
         <div class="status" id="status">⏳ Đang kết nối tới Máy chủ...</div>
     </div>
 
@@ -303,109 +258,58 @@
                 <label>Đáp án D:</label><input type="text" id="opt-D" class="opt-input">
             </div>
 
-            <button class="btn btn-primary" id="btn-save">💾 LƯU CÂU HỎI VÀO DATABASE</button>
+            <button class="btn btn-primary" id="btn-save">💾 LƯU CÂU HỎI VÀO NGÂN HÀNG</button>
             <button class="btn btn-warning" id="btn-clear">Mới / Hủy Sửa</button>
         </div>
 
         <div class="preview-panel">
+            <div class="panel">
+                <h3 style="color: #16a085;">🧑‍🎓 Quản lý Danh sách Lớp</h3>
+                <div class="hint" style="margin-bottom: 10px;">Copy từ Excel dán vào đây (Mỗi dòng 1 tên).</div>
+                <textarea id="class-list" placeholder="Nguyễn Văn A&#10;Trần Thị B..."
+                    style="height: 120px;"></textarea>
+                <button class="btn btn-success" id="btn-save-class" style="margin-top: 10px;">💾 CẬP NHẬT TÊN (ĐỒNG BỘ
+                    SANG ĐIỆN THOẠI)</button>
+            </div>
+
             <div class="panel">
                 <h3 style="color: #8e44ad;">👁️ Xem Trước Thực Tế</h3>
                 <div id="live-preview"></div>
             </div>
 
             <div class="panel">
-                <h3 style="color: #16a085;">🧑‍🎓 Quản lý Danh sách Lớp</h3>
-                <div class="hint" style="margin-bottom: 10px;">Copy từ Excel dán vào đây (Mỗi dòng 1 tên. Dòng 1 = ID 1,
-                    Dòng 2 = ID 2)</div>
-                <textarea id="class-list" placeholder="Nguyễn Văn A&#10;Trần Thị B..."
-                    style="height: 120px;"></textarea>
-                <button class="btn btn-success" id="btn-save-class" style="margin-top: 10px;">💾 CẬP NHẬT TÊN LÊN MÁY
-                    CHIẾU</button>
-            </div>
-
-            <div class="panel">
-                <h3 style="color: #8e44ad;">📚 Ngân Hàng Câu Hỏi (Từ ổ cứng)</h3>
+                <h3 style="color: #34495e;">📚 Ngân Hàng Câu Hỏi</h3>
                 <ul class="question-list" id="q-list"></ul>
             </div>
-        </div>
-    </div>
-
-    <div class="control-room">
-        <h3>🚀 TRUNG TÂM ĐIỀU KHIỂN MÁY CHIẾU</h3>
-        <p>Câu hỏi đang hiển thị trên bảng: <strong id="active-q-info" style="color: #2ecc71;">Chưa có</strong></p>
-
-        <div style="display: flex; gap: 15px; justify-content: center; max-width: 600px; margin: 0 auto;">
-            <button class="btn btn-success" id="btn-reveal" style="padding: 15px; font-size: 18px;">
-                🔍 CHẤM ĐIỂM BÀI NÀY
-            </button>
-            <button class="btn btn-danger" id="btn-reset" style="padding: 15px; font-size: 18px; margin-top: 0;">
-                🔄 LÀM MỚI BẢNG
-            </button>
-        </div>
-
-        <div
-            style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; align-items: center; background: #34495e; padding: 15px; border-radius: 8px; max-width: 600px; margin-left: auto; margin-right: auto;">
-            <label style="color: #f1c40f; margin-bottom: 0; font-size: 16px;">⏳ Đếm ngược (giây):</label>
-            <input type="number" id="timer-duration" value="30"
-                style="width: 80px; padding: 10px; border-radius: 5px; border: none; font-size: 16px; text-align: center; font-weight: bold;">
-            <button class="btn btn-warning" id="btn-start-timer" style="width: auto; margin: 0; font-size: 16px;">▶ BẮT
-                ĐẦU</button>
-        </div>
-
-        <div style="max-width: 600px; margin: 0 auto;">
-            <button class="btn btn-excel" id="btn-export">
-                📥 KẾT THÚC BÀI THI & XUẤT BẢNG ĐIỂM EXCEL
-            </button>
         </div>
     </div>
 
     <script>
         const socket = io();
         const statusEl = document.getElementById('status');
-
         let questionBank = [];
-        let activeQuestionOnBoard = null;
-
-        let studentNamesList = [];
-        let currentSubmissions = {};
-        let sessionResults = {};
-        let questionsAsked = [];
 
         socket.on('connect', () => {
-            statusEl.innerText = '🟢 Đã kết nối! Hệ thống điều khiển sẵn sàng.';
+            statusEl.innerText = '🟢 Đã kết nối! Studio sẵn sàng.';
             statusEl.style.color = '#27ae60';
         });
 
         window.onload = () => {
             fetch('/api/questions')
                 .then(res => res.json())
-                .then(data => {
-                    questionBank = data;
-                    renderQuestionList();
-                })
-                .catch(err => console.error("Chưa có database, sẽ tạo mới khi lưu."));
+                .then(data => { questionBank = data; renderQuestionList(); })
+                .catch(err => console.error("Chưa có database."));
 
             const savedList = localStorage.getItem('classList');
             if (savedList) {
-                studentNamesList = JSON.parse(savedList);
-                document.getElementById('class-list').value = studentNamesList.join('\n');
+                document.getElementById('class-list').value = JSON.parse(savedList).join('\n');
             }
             updatePreview();
         };
 
         function syncToDatabase() {
-            fetch('/api/questions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(questionBank)
-            })
-                .then(res => res.json())
-                .then(data => console.log(data.message));
+            fetch('/api/questions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(questionBank) });
         }
-
-        socket.on('update_projector', (data) => {
-            currentSubmissions[data.studentId] = data.answer;
-        });
 
         const typeSelect = document.getElementById('q-type');
         const correctSelect = document.getElementById('q-correct');
@@ -413,27 +317,15 @@
         const optD = document.getElementById('opt-D');
 
         function toggleQuestionType(isTF) {
-            optC.disabled = isTF;
-            optD.disabled = isTF;
-            correctSelect.options[2].disabled = isTF;
-            correctSelect.options[3].disabled = isTF;
-
-            if (isTF) {
-                optC.value = ''; optD.value = '';
-                if (correctSelect.value === 'C' || correctSelect.value === 'D') correctSelect.value = 'A';
-            }
+            optC.disabled = isTF; optD.disabled = isTF;
+            correctSelect.options[2].disabled = isTF; correctSelect.options[3].disabled = isTF;
+            if (isTF) { optC.value = ''; optD.value = ''; if (correctSelect.value === 'C' || correctSelect.value === 'D') correctSelect.value = 'A'; }
         }
 
         typeSelect.addEventListener('change', (e) => {
-            const isTF = (e.target.value === 'tf');
-            toggleQuestionType(isTF);
-            if (isTF) {
-                document.getElementById('opt-A').value = 'Đúng';
-                document.getElementById('opt-B').value = 'Sai';
-            } else {
-                document.getElementById('opt-A').value = '';
-                document.getElementById('opt-B').value = '';
-            }
+            const isTF = (e.target.value === 'tf'); toggleQuestionType(isTF);
+            if (isTF) { document.getElementById('opt-A').value = 'Đúng'; document.getElementById('opt-B').value = 'Sai'; }
+            else { document.getElementById('opt-A').value = ''; document.getElementById('opt-B').value = ''; }
             updatePreview();
         });
 
@@ -447,219 +339,65 @@
             const isTF = (typeSelect.value === 'tf');
 
             let imgHTML = imgUrl ? `<img src="${imgUrl}" class="preview-img" style="display:block;">` : '';
-
-            const optA = document.getElementById('opt-A').value || '...';
-            const optB = document.getElementById('opt-B').value || '...';
-
-            let optionsHTML = `
-                <div class="preview-opt">A. ${optA}</div>
-                <div class="preview-opt">B. ${optB}</div>
-            `;
+            const optA = document.getElementById('opt-A').value || '...'; const optB = document.getElementById('opt-B').value || '...';
+            let optionsHTML = `<div class="preview-opt">A. ${optA}</div><div class="preview-opt">B. ${optB}</div>`;
             if (!isTF) {
-                const optC = document.getElementById('opt-C').value || '...';
-                const optD = document.getElementById('opt-D').value || '...';
-                optionsHTML += `
-                    <div class="preview-opt">C. ${optC}</div>
-                    <div class="preview-opt">D. ${optD}</div>
-                `;
+                optionsHTML += `<div class="preview-opt">C. ${document.getElementById('opt-C').value || '...'}</div><div class="preview-opt">D. ${document.getElementById('opt-D').value || '...'}</div>`;
             }
 
-            previewEl.innerHTML = `
-                <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">${qText}</div>
-                ${imgHTML}
-                <div class="preview-options">${optionsHTML}</div>
-            `;
-
-            renderMathInElement(previewEl, {
-                delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
-                throwOnError: false
-            });
+            previewEl.innerHTML = `<div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">${qText}</div>${imgHTML}<div class="preview-options">${optionsHTML}</div>`;
+            renderMathInElement(previewEl, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
         }
 
         document.getElementById('btn-save').addEventListener('click', () => {
             const id = document.getElementById('edit-id').value;
             const qData = {
-                id: id ? id : 'Q' + Date.now(),
-                type: typeSelect.value,
-                text: document.getElementById('q-text').value,
-                imageUrl: document.getElementById('q-image-url').value,
-                options: {
-                    A: document.getElementById('opt-A').value,
-                    B: document.getElementById('opt-B').value,
-                    C: document.getElementById('opt-C').value,
-                    D: document.getElementById('opt-D').value
-                },
+                id: id ? id : 'Q' + Date.now(), type: typeSelect.value, text: document.getElementById('q-text').value, imageUrl: document.getElementById('q-image-url').value,
+                options: { A: document.getElementById('opt-A').value, B: document.getElementById('opt-B').value, C: document.getElementById('opt-C').value, D: document.getElementById('opt-D').value },
                 correct: document.getElementById('q-correct').value
             };
-
             if (!qData.text) { alert("Vui lòng nhập nội dung!"); return; }
-
-            if (id) {
-                const index = questionBank.findIndex(q => q.id === id);
-                if (index > -1) questionBank[index] = qData;
-            } else {
-                questionBank.push(qData);
-            }
-
-            renderQuestionList();
-            syncToDatabase();
-            clearForm();
+            if (id) { const index = questionBank.findIndex(q => q.id === id); if (index > -1) questionBank[index] = qData; } else { questionBank.push(qData); }
+            renderQuestionList(); syncToDatabase(); clearForm();
         });
 
         document.getElementById('btn-clear').addEventListener('click', clearForm);
 
         function clearForm() {
-            document.getElementById('edit-id').value = '';
-            document.getElementById('q-text').value = '';
-            document.getElementById('q-image-url').value = '';
-            document.getElementById('opt-A').value = '';
-            document.getElementById('opt-B').value = '';
-            document.getElementById('opt-C').value = '';
-            document.getElementById('opt-D').value = '';
-            typeSelect.value = '4opts';
-            toggleQuestionType(false);
-            document.getElementById('btn-save').innerText = '💾 LƯU CÂU HỎI VÀO DATABASE';
-            updatePreview();
+            document.getElementById('edit-id').value = ''; document.getElementById('q-text').value = ''; document.getElementById('q-image-url').value = '';
+            document.getElementById('opt-A').value = ''; document.getElementById('opt-B').value = ''; document.getElementById('opt-C').value = ''; document.getElementById('opt-D').value = '';
+            typeSelect.value = '4opts'; toggleQuestionType(false); document.getElementById('btn-save').innerText = '💾 LƯU CÂU HỎI VÀO NGÂN HÀNG'; updatePreview();
         }
 
         function renderQuestionList() {
-            const listEl = document.getElementById('q-list');
-            listEl.innerHTML = '';
-
+            const listEl = document.getElementById('q-list'); listEl.innerHTML = '';
             questionBank.forEach((q, index) => {
-                const li = document.createElement('li');
-                li.className = 'q-item';
+                const li = document.createElement('li'); li.className = 'q-item';
                 const shortText = q.text.length > 40 ? q.text.substring(0, 40) + '...' : q.text;
-                const typeLabel = q.type === 'tf' ? '[Đúng/Sai]' : '[4 Đáp án]';
-
                 li.innerHTML = `
-                    <div class="q-item-text">Câu ${index + 1} ${typeLabel}: ${shortText} (Đ/án: ${q.correct})</div>
+                    <div class="q-item-text">Câu ${index + 1}: ${shortText} (Đ/án: ${q.correct})</div>
                     <div class="q-item-actions">
                         <button class="btn btn-warning" onclick="editQuestion('${q.id}')">✏️ Sửa</button>
-                        <button class="btn btn-primary" onclick="pushToProjector('${q.id}')">📺 BẮN LÊN BẢNG</button>
-                    </div>
-                `;
+                    </div>`;
                 listEl.appendChild(li);
             });
         }
 
         window.editQuestion = function (id) {
-            const q = questionBank.find(q => q.id === id);
-            if (!q) return;
-
-            document.getElementById('edit-id').value = q.id;
-            typeSelect.value = q.type || '4opts';
-            toggleQuestionType(q.type === 'tf');
-
-            document.getElementById('q-text').value = q.text;
-            document.getElementById('q-image-url').value = q.imageUrl || '';
-            document.getElementById('opt-A').value = q.options.A;
-            document.getElementById('opt-B').value = q.options.B;
-            document.getElementById('opt-C').value = q.options.C;
-            document.getElementById('opt-D').value = q.options.D;
-            correctSelect.value = q.correct;
-
-            document.getElementById('btn-save').innerText = '💾 CẬP NHẬT CÂU HỎI';
-            updatePreview();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const q = questionBank.find(q => q.id === id); if (!q) return;
+            document.getElementById('edit-id').value = q.id; typeSelect.value = q.type || '4opts'; toggleQuestionType(q.type === 'tf');
+            document.getElementById('q-text').value = q.text; document.getElementById('q-image-url').value = q.imageUrl || '';
+            document.getElementById('opt-A').value = q.options.A; document.getElementById('opt-B').value = q.options.B; document.getElementById('opt-C').value = q.options.C; document.getElementById('opt-D').value = q.options.D;
+            correctSelect.value = q.correct; document.getElementById('btn-save').innerText = '💾 CẬP NHẬT CÂU HỎI'; updatePreview(); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         document.getElementById('btn-save-class').addEventListener('click', () => {
             const text = document.getElementById('class-list').value;
-            studentNamesList = text.split('\n').map(s => s.trim()).filter(s => s !== '');
-
+            const studentNamesList = text.split('\n').map(s => s.trim()).filter(s => s !== '');
             localStorage.setItem('classList', JSON.stringify(studentNamesList));
-
             socket.emit('teacher_command', { action: 'update_class_list', students: studentNamesList });
-            alert("Đã đẩy danh sách tên học sinh lên Máy chiếu!");
+            alert("Đã đồng bộ danh sách lớp! Bạn có thể dùng điện thoại để điều khiển.");
         });
-
-        window.pushToProjector = function (id) {
-            const q = questionBank.find(q => q.id === id);
-            if (!q) return;
-
-            activeQuestionOnBoard = q;
-            currentSubmissions = {};
-
-            document.getElementById('active-q-info').innerText = `Câu hỏi ID: ${q.id} | Đ/án chuẩn: ${q.correct}`;
-
-            socket.emit('teacher_command', { action: 'show_question', questionData: q });
-            alert("Đã bắn câu hỏi lên bảng thành công!");
-        }
-
-        document.getElementById('btn-reveal').addEventListener('click', () => {
-            if (!activeQuestionOnBoard) { alert("Bạn chưa bắn câu hỏi nào lên bảng!"); return; }
-
-            if (!questionsAsked.find(q => q.id === activeQuestionOnBoard.id)) {
-                questionsAsked.push(activeQuestionOnBoard);
-            }
-
-            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 10;
-            for (let i = 1; i <= maxStudents; i++) {
-                if (!sessionResults[i]) sessionResults[i] = {};
-                sessionResults[i][activeQuestionOnBoard.id] = currentSubmissions[i] || 'Chưa nộp';
-            }
-
-            socket.emit('teacher_command', { action: 'reveal', correctAnswer: activeQuestionOnBoard.correct });
-        });
-
-        document.getElementById('btn-reset').addEventListener('click', () => {
-            currentSubmissions = {};
-            socket.emit('teacher_command', { action: 'reset' });
-        });
-
-        document.getElementById('btn-export').addEventListener('click', () => {
-            if (questionsAsked.length === 0) {
-                alert("Bạn chưa tổ chức thi câu nào (hoặc chưa bấm nút Chấm Điểm)!"); return;
-            }
-
-            const exportData = [];
-            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 10;
-
-            for (let i = 1; i <= maxStudents; i++) {
-                let row = {
-                    "ID Thẻ": i,
-                    "Họ và Tên": studentNamesList[i - 1] || `Học sinh ${i}`
-                };
-
-                let correctCount = 0;
-
-                questionsAsked.forEach((q, index) => {
-                    const studentAns = (sessionResults[i] && sessionResults[i][q.id]) ? sessionResults[i][q.id] : 'Không nộp';
-                    row[`Câu ${index + 1} (Đ/A: ${q.correct})`] = studentAns;
-
-                    if (studentAns === q.correct) {
-                        correctCount++;
-                    }
-                });
-
-                row["Tổng số câu Đúng"] = `${correctCount} / ${questionsAsked.length}`;
-                row["Điểm Hệ 10"] = ((correctCount / questionsAsked.length) * 10).toFixed(1);
-
-                exportData.push(row);
-            }
-
-            const worksheet = XLSX.utils.json_to_sheet(exportData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Bang_Diem");
-
-            XLSX.writeFile(workbook, `Bang_Diem_Lop_Hoc_${new Date().getTime()}.xlsx`);
-        });
-
-        // [MỚI] BẮT SỰ KIỆN PHÁT LỆNH BẮT ĐẦU ĐỒNG HỒ
-        document.getElementById('btn-start-timer').addEventListener('click', () => {
-            if (!activeQuestionOnBoard) {
-                alert("Bạn cần bắn câu hỏi lên bảng trước khi bắt đầu tính giờ!");
-                return;
-            }
-            const duration = parseInt(document.getElementById('timer-duration').value);
-            if (isNaN(duration) || duration <= 0) {
-                alert("Vui lòng nhập số giây hợp lệ (lớn hơn 0)!");
-                return;
-            }
-            socket.emit('teacher_command', { action: 'start_timer', duration: duration });
-        });
-
     </script>
 </body>
 

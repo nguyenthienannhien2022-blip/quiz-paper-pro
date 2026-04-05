@@ -4,28 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Máy Quét Đáp Án Học Sinh</title>
+    <title>Siêu Điều Khiển & Máy Quét - Quiz Paper Pro</title>
+
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/cv.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/aruco.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding: 15px;
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            box-sizing: border-box;
         }
 
+        /* Khu vực Camera */
         #camera-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
-            border: 4px solid #4CAF50;
+            max-width: 500px;
+            border: 3px solid #4CAF50;
             border-radius: 8px;
             background-color: #000;
+            overflow: hidden;
+            margin-bottom: 15px;
         }
 
         #video {
@@ -42,50 +50,137 @@
         }
 
         .status-bar {
-            margin-top: 15px;
-            padding: 10px 20px;
+            padding: 10px;
             background-color: #333;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             text-align: center;
-            min-width: 300px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
-        #mock-btn {
-            margin-top: 15px;
-            padding: 12px 24px;
-            background-color: #FF9800;
-            color: white;
+        /* Khu vực Siêu Điều Khiển */
+        .control-panel {
+            background-color: #2c3e50;
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-panel h3 {
+            margin-top: 0;
+            color: #f1c40f;
+            text-align: center;
+            font-size: 18px;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
             border: none;
-            border-radius: 5px;
+            font-weight: bold;
+            background: #ecf0f1;
+            color: #2c3e50;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
             font-size: 16px;
             font-weight: bold;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            color: white;
+            margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
-        #mock-btn:hover {
-            background-color: #F57C00;
+        .btn-primary {
+            background-color: #3498db;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+        }
+
+        .btn-excel {
+            background-color: #107c41;
+            margin-bottom: 0;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .flex-row input {
+            width: 80px;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            border: none;
         }
     </style>
-
-    <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/cv.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/aruco.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-
-    <h2>Chế Độ Quét Thẻ</h2>
 
     <div id="camera-container">
         <video id="video" autoplay playsinline></video>
         <canvas id="canvas"></canvas>
     </div>
 
-    <div class="status-bar" id="status">Đang khởi động hệ thống...</div>
+    <div class="status-bar" id="status">Đang khởi động Camera...</div>
 
-    <button id="mock-btn">🛠️ Giả lập quét Học sinh ID: 5 (Đáp án B)</button>
+    <div class="control-panel">
+        <h3>🎛️ TRUNG TÂM ĐIỀU KHIỂN</h3>
+
+        <div class="form-group">
+            <select id="question-select">
+                <option value="">-- Đang tải Ngân hàng câu hỏi... --</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" id="btn-push">📺 1. BẮN CÂU HỎI LÊN BẢNG</button>
+
+        <div class="flex-row">
+            <input type="number" id="timer-duration" value="30">
+            <button class="btn btn-warning" id="btn-start-timer" style="flex: 1; margin-bottom: 0;">▶ 2. BẮT ĐẦU TÍNH
+                GIỜ</button>
+        </div>
+
+        <button class="btn btn-success" id="btn-reveal">🔍 3. CHẤM ĐIỂM (LẬT BÀI)</button>
+        <button class="btn btn-danger" id="btn-reset">🔄 LÀM MỚI BẢNG</button>
+
+        <hr style="border-color: #34495e; margin: 15px 0;">
+        <button class="btn btn-excel" id="btn-export">📥 KẾT THÚC & XUẤT ĐIỂM EXCEL</button>
+    </div>
 
     <script>
         const videoElement = document.getElementById('video');
@@ -96,7 +191,6 @@
         const lastScannedTime = {};
         let detector;
 
-        // [MỚI] KHỞI TẠO BỘ TỔNG HỢP ÂM THANH (WEB AUDIO API)
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
 
@@ -104,57 +198,33 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-
-            oscillator.type = 'square'; // Tạo tiếng beep đanh, rõ
-            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Tần số nốt A5
-
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Âm lượng nhỏ vừa đủ
-            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1); // Ngắt âm cực nhanh (0.1s)
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.1);
+            oscillator.type = 'square'; oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+            oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+            oscillator.start(); oscillator.stop(audioCtx.currentTime + 0.1);
         }
 
         function getAnswerFromCorners(corners) {
             let cx = (corners[0].x + corners[1].x + corners[2].x + corners[3].x) / 4;
             let cy = (corners[0].y + corners[1].y + corners[2].y + corners[3].y) / 4;
             let dx = corners[0].x - cx; let dy = corners[0].y - cy;
-
-            if (dx < 0 && dy < 0) return 'A';
-            if (dx > 0 && dy < 0) return 'B';
-            if (dx > 0 && dy > 0) return 'C';
-            if (dx < 0 && dy > 0) return 'D';
-            return 'A';
+            if (dx < 0 && dy < 0) return 'A'; if (dx > 0 && dy < 0) return 'B';
+            if (dx > 0 && dy > 0) return 'C'; if (dx < 0 && dy > 0) return 'D'; return 'A';
         }
-
-        document.getElementById('mock-btn').addEventListener('click', () => {
-            socket.emit('scanned_answer', { studentId: 5, answer: 'B' });
-            playBeepSound(); // Phát âm thanh khi giả lập
-            statusElement.innerText = "Đã GIẢ LẬP bắn dữ liệu ID: 5 (Chọn B) lên máy chiếu!";
-            statusElement.style.color = "#FF9800";
-        });
 
         async function startCamera() {
             try {
                 const constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } };
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 videoElement.srcObject = stream;
-
                 videoElement.addEventListener('loadedmetadata', () => {
-                    canvasElement.width = videoElement.videoWidth;
-                    canvasElement.height = videoElement.videoHeight;
+                    canvasElement.width = videoElement.videoWidth; canvasElement.height = videoElement.videoHeight;
                     detector = new AR.Detector();
-                    statusElement.innerText = "Sẵn sàng kết nối! Hãy đưa thẻ vào camera.";
+                    statusElement.innerText = "Camera sẵn sàng! Hãy chỉa vào thẻ của học sinh.";
                     statusElement.style.color = "#4CAF50";
                     requestAnimationFrame(scanFrame);
                 });
-            } catch (error) {
-                statusElement.innerText = "Lỗi: Không thể mở Camera. Vui lòng cấp quyền!";
-                statusElement.style.color = "#FF5252";
-            }
+            } catch (error) { statusElement.innerText = "Lỗi Camera!"; statusElement.style.color = "#FF5252"; }
         }
 
         function scanFrame() {
@@ -162,21 +232,14 @@
                 context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
                 const imageData = context.getImageData(0, 0, canvasElement.width, canvasElement.height);
                 const markers = detector.detect(imageData);
-
                 if (markers.length > 0) {
                     drawMarkers(markers);
-                    statusElement.innerText = `Đang đồng bộ ${markers.length} thẻ lên máy chiếu...`;
-                    statusElement.style.color = "#00E676";
-
                     const now = Date.now();
                     for (let i = 0; i < markers.length; i++) {
-                        let markerId = markers[i].id;
-                        let studentAnswer = getAnswerFromCorners(markers[i].corners);
-
+                        let markerId = markers[i].id; let studentAnswer = getAnswerFromCorners(markers[i].corners);
                         if (!lastScannedTime[markerId] || now - lastScannedTime[markerId] > 500) {
                             socket.emit('scanned_answer', { studentId: markerId, answer: studentAnswer });
-                            playBeepSound(); // [MỚI] Phát âm thanh báo hiệu quét thành công
-                            lastScannedTime[markerId] = now;
+                            playBeepSound(); lastScannedTime[markerId] = now;
                         }
                     }
                 }
@@ -201,7 +264,101 @@
             }
         }
 
-        window.onload = () => { startCamera(); };
+        let questionBank = [];
+        let activeQuestionOnBoard = null;
+        let studentNamesList = [];
+        let currentSubmissions = {};
+        let sessionResults = {};
+        let questionsAsked = [];
+
+        window.onload = () => {
+            startCamera();
+            // Tải ngân hàng câu hỏi vào Dropdown
+            fetch('/api/questions')
+                .then(res => res.json())
+                .then(data => {
+                    questionBank = data;
+                    const selectEl = document.getElementById('question-select');
+                    selectEl.innerHTML = '<option value="">-- Chọn câu hỏi để bắn lên Tivi --</option>';
+                    data.forEach((q, index) => {
+                        const opt = document.createElement('option');
+                        opt.value = q.id;
+                        opt.innerText = `Câu ${index + 1}: ${q.text.substring(0, 30)}... (Đ/án: ${q.correct})`;
+                        selectEl.appendChild(opt);
+                    });
+                });
+        };
+
+        // Lắng nghe cập nhật danh sách lớp từ Studio (Máy tính)
+        socket.on('execute_command', (data) => {
+            if (data.action === 'update_class_list') {
+                studentNamesList = data.students;
+                alert("Đã nhận danh sách lớp từ máy tính. Sẵn sàng chấm điểm!");
+            }
+        });
+
+        // Lắng nghe tín hiệu nộp bài
+        socket.on('update_projector', (data) => {
+            currentSubmissions[data.studentId] = data.answer;
+        });
+
+        // CÁC NÚT ĐIỀU KHIỂN
+        document.getElementById('btn-push').addEventListener('click', () => {
+            const qId = document.getElementById('question-select').value;
+            if (!qId) { alert("Vui lòng chọn 1 câu hỏi!"); return; }
+            const q = questionBank.find(x => x.id === qId);
+            activeQuestionOnBoard = q;
+            currentSubmissions = {}; // Xóa đáp án tạm cũ
+            socket.emit('teacher_command', { action: 'show_question', questionData: q });
+        });
+
+        document.getElementById('btn-start-timer').addEventListener('click', () => {
+            if (!activeQuestionOnBoard) { alert("Phải bắn câu hỏi lên trước!"); return; }
+            const duration = parseInt(document.getElementById('timer-duration').value);
+            socket.emit('teacher_command', { action: 'start_timer', duration: duration });
+        });
+
+        document.getElementById('btn-reveal').addEventListener('click', () => {
+            if (!activeQuestionOnBoard) { alert("Bạn chưa bắn câu hỏi!"); return; }
+            if (!questionsAsked.find(q => q.id === activeQuestionOnBoard.id)) { questionsAsked.push(activeQuestionOnBoard); }
+
+            // Chốt điểm vào sổ
+            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 10;
+            for (let i = 1; i <= maxStudents; i++) {
+                if (!sessionResults[i]) sessionResults[i] = {};
+                sessionResults[i][activeQuestionOnBoard.id] = currentSubmissions[i] || 'Chưa nộp';
+            }
+            socket.emit('teacher_command', { action: 'reveal', correctAnswer: activeQuestionOnBoard.correct });
+        });
+
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            currentSubmissions = {};
+            socket.emit('teacher_command', { action: 'reset' });
+        });
+
+        document.getElementById('btn-export').addEventListener('click', () => {
+            if (questionsAsked.length === 0) { alert("Bạn chưa tổ chức thi câu nào!"); return; }
+            const exportData = [];
+            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 10;
+
+            for (let i = 1; i <= maxStudents; i++) {
+                let row = { "ID Thẻ": i, "Họ và Tên": studentNamesList[i - 1] || `Học sinh ${i}` };
+                let correctCount = 0;
+                questionsAsked.forEach((q, index) => {
+                    const studentAns = (sessionResults[i] && sessionResults[i][q.id]) ? sessionResults[i][q.id] : 'Không nộp';
+                    row[`Câu ${index + 1} (Đ/A: ${q.correct})`] = studentAns;
+                    if (studentAns === q.correct) correctCount++;
+                });
+                row["Tổng số câu Đúng"] = `${correctCount} / ${questionsAsked.length}`;
+                row["Điểm Hệ 10"] = ((correctCount / questionsAsked.length) * 10).toFixed(1);
+                exportData.push(row);
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Bang_Diem");
+            XLSX.writeFile(workbook, `Bang_Diem_Lop_Hoc_${new Date().getTime()}.xlsx`);
+        });
     </script>
 </body>
 
