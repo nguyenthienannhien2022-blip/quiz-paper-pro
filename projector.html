@@ -21,13 +21,19 @@
             cursor: pointer;
         }
 
+        /* [ĐÃ SỬA] Kéo dãn tràn viền Full HD trên Tivi */
         .container {
-            max-width: 1200px;
+            max-width: 98%;
+            width: 100%;
             margin: 0 auto;
             background: white;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-height: 90vh;
+            /* Kéo dài chiều dọc xuống dưới cùng */
+            display: flex;
+            flex-direction: column;
         }
 
         .header-bar {
@@ -83,7 +89,8 @@
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
-            min-height: 200px;
+            flex-grow: 1;
+            /* Chiếm tối đa diện tích trống */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -91,7 +98,7 @@
         }
 
         .q-text {
-            font-size: 32px;
+            font-size: 38px;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 20px;
@@ -104,8 +111,8 @@
         }
 
         .q-images img {
-            max-width: 500px;
-            max-height: 350px;
+            max-width: 700px;
+            max-height: 450px;
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -116,15 +123,15 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             text-align: left;
-            max-width: 900px;
+            max-width: 100%;
             margin: 0 auto;
             width: 100%;
         }
 
         .opt-box {
             background: white;
-            padding: 15px 25px;
-            font-size: 24px;
+            padding: 20px 25px;
+            font-size: 28px;
             font-weight: bold;
             border-radius: 10px;
             border: 2px solid #bdc3c7;
@@ -135,14 +142,15 @@
 
         .opt-label {
             display: inline-block;
-            min-width: 40px;
-            height: 40px;
-            line-height: 40px;
+            min-width: 50px;
+            height: 50px;
+            line-height: 50px;
             text-align: center;
             background: #34495e;
             color: white;
             border-radius: 50%;
             margin-right: 15px;
+            font-size: 24px;
         }
 
         .student-grid {
@@ -155,8 +163,8 @@
         }
 
         .student-card {
-            width: 130px;
-            height: 90px;
+            width: 140px;
+            height: 100px;
             background-color: #ecf0f1;
             border: 2px solid #bdc3c7;
             border-radius: 10px;
@@ -164,7 +172,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             transition: all 0.3s ease;
             padding: 5px;
@@ -224,29 +232,20 @@
         let studentNames = [];
         let countdownInterval;
 
-        // ==========================================
-        // HỆ THỐNG ÂM THANH DÙNG FILE MP3
-        // ==========================================
         const audioTinhGio = new Audio('/tinh-gio-choi.mp3');
         const audioHetGio = new Audio('/hetgio.mp3');
         const audioChucMung = new Audio('/chucmung.mp3');
-
-        // [TINH CHỈNH]: Cho phép nhạc tính giờ tự động lặp lại (loop) nếu đồng hồ đếm lâu hơn bài nhạc
         audioTinhGio.loop = true;
 
-        // Hàm giúp dập tắt mọi âm thanh đang phát để tránh bị đè nhạc lên nhau
         function stopAllAudio() {
             audioTinhGio.pause(); audioTinhGio.currentTime = 0;
             audioHetGio.pause(); audioHetGio.currentTime = 0;
             audioChucMung.pause(); audioChucMung.currentTime = 0;
         }
 
-        // Tạo tương tác rỗng để mở khóa chính sách Autoplay của trình duyệt
         document.body.addEventListener('click', () => {
             console.log("Sẵn sàng phát nhạc nền mp3!");
         });
-
-        // ==========================================
 
         function getStudentLabel(id) {
             if (studentNames && studentNames[id - 1]) return studentNames[id - 1];
@@ -302,8 +301,6 @@
 
             if (data.action === 'start_timer') {
                 clearInterval(countdownInterval);
-
-                // [ÂM THANH] Bắt đầu bật nhạc nền tính giờ
                 stopAllAudio();
                 audioTinhGio.play().catch(e => console.log("Yêu cầu click chuột để bật nhạc"));
 
@@ -333,17 +330,15 @@
                     timerBar.style.width = percentage + '%';
 
                     if (percentage <= 50 && percentage > 20) {
-                        timerBar.style.backgroundColor = '#f1c40f'; // Vàng
+                        timerBar.style.backgroundColor = '#f1c40f';
                     } else if (percentage <= 20) {
-                        timerBar.style.backgroundColor = '#e74c3c'; // Đỏ
+                        timerBar.style.backgroundColor = '#e74c3c';
                     }
 
                     if (timeLeft <= 0) {
                         clearInterval(countdownInterval);
                         document.getElementById('time-left').innerText = "0";
                         timerTextUI.innerHTML = "⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI!";
-
-                        // [ÂM THANH] Tắt nhạc tính giờ, Bật còi hết giờ
                         stopAllAudio();
                         audioHetGio.play().catch(e => console.log("Lỗi âm thanh hết giờ"));
                     }
@@ -351,9 +346,7 @@
             }
 
             if (data.action === 'show_question') {
-                // Tắt mọi âm thanh khi hiện câu mới
                 stopAllAudio();
-
                 clearInterval(countdownInterval);
                 document.getElementById('timer-container').style.display = 'none';
                 document.getElementById('timer-text').style.display = 'none';
@@ -386,8 +379,6 @@
 
             if (data.action === 'reveal') {
                 clearInterval(countdownInterval);
-
-                // [ÂM THANH] Tắt mọi âm thanh, Bật tiếng Chúc mừng vang dội
                 stopAllAudio();
                 audioChucMung.play().catch(e => console.log("Lỗi âm thanh chúc mừng"));
 
@@ -407,9 +398,7 @@
             }
 
             if (data.action === 'reset') {
-                // Tắt âm thanh
                 stopAllAudio();
-
                 clearInterval(countdownInterval);
                 document.getElementById('timer-container').style.display = 'none';
                 document.getElementById('timer-text').style.display = 'none';
