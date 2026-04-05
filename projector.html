@@ -258,6 +258,18 @@
         </div>
     </div>
 
+    <!-- Lớp phủ yêu cầu nhấp chuột để mở khóa âm thanh (Autoplay Policy) -->
+    <div id="audio-unlock-overlay" style="
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.75); z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; flex-direction: column; gap: 15px;
+    ">
+        <div style="font-size: 80px;">🔊</div>
+        <div style="color: white; font-size: 28px; font-weight: bold; text-align: center;">Nhấp vào đây để BẬT LOA</div>
+        <div style="color: #bdc3c7; font-size: 16px;">Trình duyệt yêu cầu nhấp 1 lần để kích hoạt âm thanh</div>
+    </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const roomCode = urlParams.get('room') || 'DEMO';
@@ -269,10 +281,37 @@
         let studentSubmissions = {};
         let totalStudents = localClass.length > 0 ? localClass.length : 50;
         let countdownInterval;
+        let audioUnlocked = false;
 
         const audioTinhGio = new Audio('/tinh-gio-choi.mp3'); audioTinhGio.loop = true;
         const audioHetGio = new Audio('/hetgio.mp3');
         const audioChucMung = new Audio('/chucmung.mp3');
+
+        // Preload audio
+        audioTinhGio.preload = 'auto';
+        audioHetGio.preload = 'auto';
+        audioChucMung.preload = 'auto';
+
+        function unlockAllAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            // Phát rồi tắt ngay để "mở khóa" cho trình duyệt
+            [audioTinhGio, audioHetGio, audioChucMung].forEach(audio => {
+                audio.volume = 0;
+                audio.play().then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.volume = 1;
+                }).catch(() => { audio.volume = 1; });
+            });
+            document.getElementById('audio-unlock-overlay').style.display = 'none';
+            console.log('🔊 Âm thanh đã được mở khóa!');
+        }
+
+        // Nhấp vào overlay hoặc bất kỳ đâu trên trang đều mở khóa
+        document.getElementById('audio-unlock-overlay').addEventListener('click', unlockAllAudio);
+        document.addEventListener('click', unlockAllAudio, { once: true });
+
         function stopAllAudio() { audioTinhGio.pause(); audioTinhGio.currentTime = 0; audioHetGio.pause(); audioHetGio.currentTime = 0; audioChucMung.pause(); audioChucMung.currentTime = 0; }
 
         function getStudentLabel(id) { return localClass[id - 1] || `ID: ${id}`; }
