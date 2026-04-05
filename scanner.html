@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siêu Điều Khiển - Scanner</title>
+    <title>Siêu Điều Khiển & Máy Quét - Quiz Paper Pro</title>
+
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/cv.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/aruco.js"></script>
@@ -20,6 +21,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            box-sizing: border-box;
         }
 
         #camera-container {
@@ -188,7 +190,7 @@
                 videoElement.srcObject = stream;
                 videoElement.addEventListener('loadedmetadata', () => {
                     canvasElement.width = videoElement.videoWidth; canvasElement.height = videoElement.videoHeight;
-                    detector = new AR.Detector(); statusElement.innerText = "Camera sẵn sàng! Hãy quét thẻ."; statusElement.style.color = "#4CAF50"; requestAnimationFrame(scanFrame);
+                    detector = new AR.Detector(); statusElement.innerText = "Camera sẵn sàng! Đang lấy câu hỏi..."; statusElement.style.color = "#4CAF50"; requestAnimationFrame(scanFrame);
                 });
             } catch (error) { statusElement.innerText = "Lỗi Camera!"; statusElement.style.color = "#FF5252"; }
         }
@@ -220,13 +222,18 @@
 
         window.onload = () => { startCamera(); };
 
-        socket.on('connect', () => { socket.emit('join_room', roomCode); });
+        // [MẤU CHỐT TỰ ĐỘNG Ở ĐÂY]
+        socket.on('connect', () => {
+            socket.emit('join_room', roomCode);
 
-        // KHI BẤM NÚT "TẢI DỮ LIỆU TỪ LAPTOP"
+            // Ngay khi kết nối thành công, điện thoại TỰ ĐỘNG phát lệnh gọi dữ liệu ngầm từ Laptop
+            socket.emit('teacher_command', { room: roomCode, action: 'request_sync' });
+        });
+
+        // KHI BẤM NÚT DỰ PHÒNG "TẢI DỮ LIỆU TỪ LAPTOP"
         document.getElementById('btn-request-sync').addEventListener('click', () => {
             statusElement.innerText = "Đang gọi Laptop, vui lòng chờ...";
             statusElement.style.backgroundColor = "#e67e22"; statusElement.style.color = "white";
-            // Gửi lệnh yêu cầu Laptop bắn dữ liệu sang
             socket.emit('teacher_command', { room: roomCode, action: 'request_sync' });
         });
 
@@ -243,9 +250,9 @@
                 selectEl.appendChild(opt);
             });
 
-            statusElement.innerText = `✅ Đã nhận ${studentNamesList.length} Học sinh & ${questionBank.length} Câu hỏi từ Laptop!`;
+            statusElement.innerText = `✅ Đã nhận ${studentNamesList.length} Học sinh & ${questionBank.length} Câu hỏi!`;
             statusElement.style.backgroundColor = "#2ecc71"; statusElement.style.color = "white";
-            setTimeout(() => { statusElement.innerText = "Camera sẵn sàng!"; statusElement.style.backgroundColor = "#333"; statusElement.style.color = "#4CAF50"; }, 4000);
+            setTimeout(() => { statusElement.innerText = "Camera sẵn sàng! Hãy quét thẻ."; statusElement.style.backgroundColor = "#333"; statusElement.style.color = "#4CAF50"; }, 3000);
         });
 
         socket.on('update_projector', (data) => { currentSubmissions[data.studentId] = data.answer; });
