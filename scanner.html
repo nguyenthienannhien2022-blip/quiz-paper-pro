@@ -24,7 +24,6 @@
             box-sizing: border-box;
         }
 
-        /* Khu vực Camera */
         #camera-container {
             position: relative;
             width: 100%;
@@ -61,7 +60,6 @@
             box-sizing: border-box;
         }
 
-        /* Khu vực Siêu Điều Khiển */
         .control-panel {
             background-color: #2c3e50;
             width: 100%;
@@ -273,7 +271,6 @@
 
         window.onload = () => {
             startCamera();
-            // Tải ngân hàng câu hỏi vào Dropdown
             fetch('/api/questions')
                 .then(res => res.json())
                 .then(data => {
@@ -289,7 +286,6 @@
                 });
         };
 
-        // Lắng nghe cập nhật danh sách lớp từ Studio (Máy tính)
         socket.on('execute_command', (data) => {
             if (data.action === 'update_class_list') {
                 studentNamesList = data.students;
@@ -297,18 +293,16 @@
             }
         });
 
-        // Lắng nghe tín hiệu nộp bài
         socket.on('update_projector', (data) => {
             currentSubmissions[data.studentId] = data.answer;
         });
 
-        // CÁC NÚT ĐIỀU KHIỂN
         document.getElementById('btn-push').addEventListener('click', () => {
             const qId = document.getElementById('question-select').value;
             if (!qId) { alert("Vui lòng chọn 1 câu hỏi!"); return; }
             const q = questionBank.find(x => x.id === qId);
             activeQuestionOnBoard = q;
-            currentSubmissions = {}; // Xóa đáp án tạm cũ
+            currentSubmissions = {};
             socket.emit('teacher_command', { action: 'show_question', questionData: q });
         });
 
@@ -322,8 +316,8 @@
             if (!activeQuestionOnBoard) { alert("Bạn chưa bắn câu hỏi!"); return; }
             if (!questionsAsked.find(q => q.id === activeQuestionOnBoard.id)) { questionsAsked.push(activeQuestionOnBoard); }
 
-            // Chốt điểm vào sổ
-            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 10;
+            // Lấy độ dài lớp học (Tối đa 50 nếu không dán danh sách)
+            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 50;
             for (let i = 1; i <= maxStudents; i++) {
                 if (!sessionResults[i]) sessionResults[i] = {};
                 sessionResults[i][activeQuestionOnBoard.id] = currentSubmissions[i] || 'Chưa nộp';
@@ -339,7 +333,7 @@
         document.getElementById('btn-export').addEventListener('click', () => {
             if (questionsAsked.length === 0) { alert("Bạn chưa tổ chức thi câu nào!"); return; }
             const exportData = [];
-            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 10;
+            const maxStudents = studentNamesList.length > 0 ? studentNamesList.length : 50;
 
             for (let i = 1; i <= maxStudents; i++) {
                 let row = { "ID Thẻ": i, "Họ và Tên": studentNamesList[i - 1] || `Học sinh ${i}` };

@@ -21,7 +21,6 @@
             cursor: pointer;
         }
 
-        /* [ĐÃ SỬA] Kéo dãn tràn viền Full HD trên Tivi */
         .container {
             max-width: 98%;
             width: 100%;
@@ -31,9 +30,9 @@
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             min-height: 90vh;
-            /* Kéo dài chiều dọc xuống dưới cùng */
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
         }
 
         .header-bar {
@@ -88,9 +87,8 @@
             border: 2px solid #b3d4fc;
             border-radius: 12px;
             padding: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             flex-grow: 1;
-            /* Chiếm tối đa diện tích trống */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -157,27 +155,29 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            padding-top: 20px;
+            gap: 10px;
+            padding-top: 15px;
             border-top: 2px dashed #bdc3c7;
         }
 
+        /* Thu nhỏ thẻ một chút để nhét vừa 50 học sinh lên Tivi */
         .student-card {
-            width: 140px;
-            height: 100px;
+            width: 115px;
+            height: 75px;
             background-color: #ecf0f1;
             border: 2px solid #bdc3c7;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             transition: all 0.3s ease;
-            padding: 5px;
+            padding: 4px;
             text-align: center;
-            line-height: 1.4;
+            line-height: 1.3;
+            overflow: hidden;
         }
 
         .student-card.submitted {
@@ -230,6 +230,7 @@
     <script>
         let studentSubmissions = {};
         let studentNames = [];
+        let totalStudents = 50; // Mặc định hiển thị 50 ô nếu giáo viên chưa tạo danh sách
         let countdownInterval;
 
         const audioTinhGio = new Audio('/tinh-gio-choi.mp3');
@@ -252,14 +253,26 @@
             return `ID: ${id}`;
         }
 
-        const grid = document.getElementById('student-grid');
-        for (let i = 1; i <= 10; i++) {
-            const card = document.createElement('div');
-            card.className = 'student-card';
-            card.id = `student-${i}`;
-            card.innerText = getStudentLabel(i);
-            grid.appendChild(card);
+        // Hàm tự động vẽ lưới học sinh
+        function renderStudentGrid() {
+            const grid = document.getElementById('student-grid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= totalStudents; i++) {
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.id = `student-${i}`;
+
+                let currentStatus = "";
+                if (studentSubmissions[i]) {
+                    // Nếu đang trong lúc lật bài (đã hiện kết quả) thì không gán ✔️ nữa
+                    currentStatus = "\n✔️";
+                }
+                card.innerText = getStudentLabel(i) + (document.getElementById('timer-container').style.display === 'block' && studentSubmissions[i] ? currentStatus : '');
+                grid.appendChild(card);
+            }
         }
+
+        renderStudentGrid(); // Gọi lần đầu khi tải trang
 
         const statusText = document.getElementById('connection-status');
         const socket = io();
@@ -286,17 +299,8 @@
         socket.on('execute_command', (data) => {
             if (data.action === 'update_class_list') {
                 studentNames = data.students;
-                for (let i = 1; i <= 10; i++) {
-                    const card = document.getElementById(`student-${i}`);
-                    if (card) {
-                        let currentStatus = "";
-                        if (card.classList.contains('submitted')) currentStatus = "\n✔️";
-                        else if (card.classList.contains('correct') || card.classList.contains('incorrect')) {
-                            currentStatus = `\n${studentSubmissions[i]}`;
-                        }
-                        card.innerText = getStudentLabel(i) + currentStatus;
-                    }
-                }
+                totalStudents = studentNames.length > 0 ? studentNames.length : 50; // Cập nhật số ô bằng đúng danh sách lớp
+                renderStudentGrid();
             }
 
             if (data.action === 'start_timer') {
@@ -404,13 +408,7 @@
                 document.getElementById('timer-text').style.display = 'none';
 
                 studentSubmissions = {};
-                for (let i = 1; i <= 10; i++) {
-                    const card = document.getElementById(`student-${i}`);
-                    if (card) {
-                        card.className = 'student-card';
-                        card.innerText = getStudentLabel(i);
-                    }
-                }
+                renderStudentGrid(); // Xóa trắng màn hình và trả lại số lượng thẻ gốc
                 document.getElementById('question-board').innerHTML = `
                     <div class="q-text" style="color: #7f8c8d; font-size: 24px;">
                         Đang chờ giáo viên phát đề...
