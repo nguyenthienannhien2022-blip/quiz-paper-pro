@@ -201,7 +201,7 @@
             transform: scale(0.95);
         }
 
-        /* GIAO DIỆN BẢNG XẾP HẠNG (MỚI) */
+        /* GIAO DIỆN BẢNG XẾP HẠNG */
         #leaderboard-board {
             display: none;
             width: 100%;
@@ -397,7 +397,6 @@
         });
 
         socket.on('execute_command', (data) => {
-            // MỌI LỆNH TRỪ 'show_leaderboard' ĐỀU PHẢI ẨN BẢNG XẾP HẠNG ĐI
             if (data.action !== 'show_leaderboard') {
                 document.getElementById('leaderboard-board').style.display = 'none';
                 document.getElementById('question-board').style.display = 'flex';
@@ -523,12 +522,10 @@
                 `;
             }
 
-            // TÍNH NĂNG MỚI: HIỂN THỊ BẢNG XẾP HẠNG TRÊN MÁY CHIẾU
             if (data.action === 'show_leaderboard') {
                 stopAllAudio();
                 audioChucMung.play().catch(e => console.log("Lỗi âm thanh chúc mừng"));
 
-                // Ẩn bảng câu hỏi, hiện bảng xếp hạng
                 document.getElementById('question-board').style.display = 'none';
                 document.getElementById('student-grid').style.display = 'none';
                 document.getElementById('timer-container').style.display = 'none';
@@ -542,7 +539,6 @@
                 const leaderboard = data.leaderboard;
 
                 leaderboard.forEach((student, index) => {
-                    // Ẩn những người chưa có điểm nào để bảng xếp hạng trông "Sạch" hơn
                     if (student.score === 0 && index > 2) return;
 
                     const card = document.createElement('div');
@@ -553,10 +549,13 @@
                     else if (index === 1 && student.score > 0) { card.classList.add('top2'); rankIcon = '🥈'; }
                     else if (index === 2 && student.score > 0) { card.classList.add('top3'); rankIcon = '🥉'; }
 
+                    // [QUAN TRỌNG] Máy chiếu tự dịch ID thành Tên thật bằng trí nhớ của chính nó!
+                    const realName = getStudentLabel(student.id);
+
                     card.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 28px; min-width: 40px; text-align: center;">${rankIcon}</span>
-                            <span class="lb-name" title="${student.name}">${student.name}</span>
+                            <span class="lb-name" title="${realName}">${realName}</span>
                         </div>
                         <span class="lb-score">${student.score} Điểm</span>
                     `;
