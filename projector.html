@@ -33,6 +33,7 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
+            position: relative;
         }
 
         .header-bar {
@@ -160,7 +161,6 @@
             border-top: 2px dashed #bdc3c7;
         }
 
-        /* Thu nhỏ thẻ một chút để nhét vừa 50 học sinh lên Tivi */
         .student-card {
             width: 115px;
             height: 75px;
@@ -200,6 +200,99 @@
             border-color: #c0392b;
             transform: scale(0.95);
         }
+
+        /* GIAO DIỆN BẢNG XẾP HẠNG (MỚI) */
+        #leaderboard-board {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        #leaderboard-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .lb-card {
+            width: 280px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            border: 3px solid #bdc3c7;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .lb-card.top1 {
+            background: #fffcf0;
+            border-color: #f1c40f;
+            color: #d35400;
+            transform: scale(1.2);
+            box-shadow: 0 8px 20px rgba(241, 196, 15, 0.4);
+            z-index: 3;
+            margin: 10px;
+        }
+
+        .lb-card.top2 {
+            background: #f8f9fa;
+            border-color: #95a5a6;
+            color: #7f8c8d;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(149, 165, 166, 0.4);
+            z-index: 2;
+            margin: 10px;
+        }
+
+        .lb-card.top3 {
+            background: #fdf5e6;
+            border-color: #d35400;
+            color: #a04000;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(211, 84, 0, 0.4);
+            z-index: 2;
+            margin: 10px;
+        }
+
+        .lb-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 170px;
+            text-align: left;
+        }
+
+        .lb-score {
+            background: #2c3e50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 20px;
+        }
+
+        .lb-card.top1 .lb-score {
+            background: #f39c12;
+        }
+
+        .lb-card.top2 .lb-score {
+            background: #7f8c8d;
+        }
+
+        .lb-card.top3 .lb-score {
+            background: #d35400;
+        }
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -209,7 +302,7 @@
 
     <div class="container">
         <div class="header-bar">
-            <h1>📊 Bảng Kết Quả Trực Tiếp</h1>
+            <h1>📊 Màn Hình Tương Tác Lớp Học</h1>
             <div class="status" id="connection-status">⏳ Đang kết nối tới Máy chủ...</div>
         </div>
 
@@ -225,12 +318,21 @@
         </div>
 
         <div class="student-grid" id="student-grid"></div>
+
+        <div id="leaderboard-board">
+            <h2 style="font-size: 46px; color: #8e44ad; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                🏆 BẢNG VÀNG LỚP HỌC 🏆</h2>
+            <p style="font-size: 22px; color: #7f8c8d; margin-top: 0; margin-bottom: 20px;">Dựa trên số câu trả lời đúng
+            </p>
+            <div id="leaderboard-grid"></div>
+        </div>
+
     </div>
 
     <script>
         let studentSubmissions = {};
         let studentNames = [];
-        let totalStudents = 50; // Mặc định hiển thị 50 ô nếu giáo viên chưa tạo danh sách
+        let totalStudents = 50;
         let countdownInterval;
 
         const audioTinhGio = new Audio('/tinh-gio-choi.mp3');
@@ -253,7 +355,6 @@
             return `ID: ${id}`;
         }
 
-        // Hàm tự động vẽ lưới học sinh
         function renderStudentGrid() {
             const grid = document.getElementById('student-grid');
             grid.innerHTML = '';
@@ -264,7 +365,6 @@
 
                 let currentStatus = "";
                 if (studentSubmissions[i]) {
-                    // Nếu đang trong lúc lật bài (đã hiện kết quả) thì không gán ✔️ nữa
                     currentStatus = "\n✔️";
                 }
                 card.innerText = getStudentLabel(i) + (document.getElementById('timer-container').style.display === 'block' && studentSubmissions[i] ? currentStatus : '');
@@ -272,7 +372,7 @@
             }
         }
 
-        renderStudentGrid(); // Gọi lần đầu khi tải trang
+        renderStudentGrid();
 
         const statusText = document.getElementById('connection-status');
         const socket = io();
@@ -297,9 +397,16 @@
         });
 
         socket.on('execute_command', (data) => {
+            // MỌI LỆNH TRỪ 'show_leaderboard' ĐỀU PHẢI ẨN BẢNG XẾP HẠNG ĐI
+            if (data.action !== 'show_leaderboard') {
+                document.getElementById('leaderboard-board').style.display = 'none';
+                document.getElementById('question-board').style.display = 'flex';
+                document.getElementById('student-grid').style.display = 'flex';
+            }
+
             if (data.action === 'update_class_list') {
                 studentNames = data.students;
-                totalStudents = studentNames.length > 0 ? studentNames.length : 50; // Cập nhật số ô bằng đúng danh sách lớp
+                totalStudents = studentNames.length > 0 ? studentNames.length : 50;
                 renderStudentGrid();
             }
 
@@ -408,12 +515,53 @@
                 document.getElementById('timer-text').style.display = 'none';
 
                 studentSubmissions = {};
-                renderStudentGrid(); // Xóa trắng màn hình và trả lại số lượng thẻ gốc
+                renderStudentGrid();
                 document.getElementById('question-board').innerHTML = `
                     <div class="q-text" style="color: #7f8c8d; font-size: 24px;">
                         Đang chờ giáo viên phát đề...
                     </div>
                 `;
+            }
+
+            // TÍNH NĂNG MỚI: HIỂN THỊ BẢNG XẾP HẠNG TRÊN MÁY CHIẾU
+            if (data.action === 'show_leaderboard') {
+                stopAllAudio();
+                audioChucMung.play().catch(e => console.log("Lỗi âm thanh chúc mừng"));
+
+                // Ẩn bảng câu hỏi, hiện bảng xếp hạng
+                document.getElementById('question-board').style.display = 'none';
+                document.getElementById('student-grid').style.display = 'none';
+                document.getElementById('timer-container').style.display = 'none';
+                document.getElementById('timer-text').style.display = 'none';
+
+                const lbBoard = document.getElementById('leaderboard-board');
+                const lbGrid = document.getElementById('leaderboard-grid');
+                lbBoard.style.display = 'flex';
+                lbGrid.innerHTML = '';
+
+                const leaderboard = data.leaderboard;
+
+                leaderboard.forEach((student, index) => {
+                    // Ẩn những người chưa có điểm nào để bảng xếp hạng trông "Sạch" hơn
+                    if (student.score === 0 && index > 2) return;
+
+                    const card = document.createElement('div');
+                    card.className = 'lb-card';
+
+                    let rankIcon = `#${index + 1}`;
+                    if (index === 0 && student.score > 0) { card.classList.add('top1'); rankIcon = '🥇'; }
+                    else if (index === 1 && student.score > 0) { card.classList.add('top2'); rankIcon = '🥈'; }
+                    else if (index === 2 && student.score > 0) { card.classList.add('top3'); rankIcon = '🥉'; }
+
+                    card.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 28px; min-width: 40px; text-align: center;">${rankIcon}</span>
+                            <span class="lb-name" title="${student.name}">${student.name}</span>
+                        </div>
+                        <span class="lb-score">${student.score} Điểm</span>
+                    `;
+                    lbGrid.appendChild(card);
+                });
             }
         });
     </script>
