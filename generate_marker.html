@@ -6,125 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xưởng In Thẻ Cầm Tay - Studio Đề Thi</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f6f9;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 350px;
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            overflow-y: auto;
-        }
-
-        .sidebar h2 {
-            color: #f1c40f;
-            margin-top: 0;
-            border-bottom: 2px solid #34495e;
-            padding-bottom: 10px;
-        }
-
-        .step {
-            background: #34495e;
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #2ecc71;
-        }
-
-        .step h4 {
-            margin: 0 0 10px 0;
-            color: #2ecc71;
-            font-size: 18px;
-        }
-
-        .step p {
-            margin: 0;
-            font-size: 14.5px;
-            line-height: 1.6;
-            color: #ecf0f1;
-        }
-
-        .highlight {
-            font-weight: bold;
-            color: #f1c40f;
-            font-size: 16px;
-        }
-
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        iframe {
-            flex: 1;
-            border: none;
-            width: 100%;
-            height: 100%;
-            background: white;
-        }
-
-        .warning {
-            background: #e74c3c;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-top: 20px;
-            text-align: center;
-            line-height: 1.5;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f6f9; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 380px; background-color: #2c3e50; color: white; padding: 20px; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); z-index: 10; overflow-y: auto; }
+        .sidebar h2 { color: #f1c40f; margin-top: 0; border-bottom: 2px solid #34495e; padding-bottom: 10px; }
+        .step { background: #34495e; margin-bottom: 15px; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; }
+        .step h4 { margin: 0 0 10px 0; color: #3498db; font-size: 18px; }
+        .step p { margin: 0; font-size: 14.5px; line-height: 1.6; color: #ecf0f1; }
+        .highlight { font-weight: bold; color: #f1c40f; font-size: 16px; }
+        .content { flex: 1; display: flex; flex-direction: column; }
+        iframe { flex: 1; border: none; width: 100%; height: 100%; background: white; }
+        .warning { background: #e74c3c; padding: 15px; border-radius: 8px; font-size: 14px; margin-top: 20px; text-align: center; line-height: 1.5; }
     </style>
 </head>
 
 <body>
     <div class="sidebar">
         <h2>🖨️ Xưởng In Thẻ ArUco</h2>
-        <p style="font-size: 14px; color: #bdc3c7;">Làm theo đúng 4 bước sau để tạo ra một file PDF chứa 50 thẻ nét
-            căng, 4 thẻ vuông vức trên 1 trang A4.</p>
+        <p style="font-size: 14px; color: #bdc3c7;">Hãy dùng công cụ bên phải để tự động dàn trang 50 thẻ học sinh ra giấy A4 nhé.</p>
 
         <div class="step">
-            <h4>Bước 1: Chọn Loại Mã (Quan trọng nhất)</h4>
-            <p>Tại ô Dictionary, bạn BẮT BUỘC phải chọn <span class="highlight">Original ArUco</span>. Nếu chọn sai, máy
-                quét sẽ bị mù.</p>
+            <h4>Bước 1: Chọn Loại Mã</h4>
+            <p>Tại ô Dictionary, hãy chọn <span class="highlight">Original ArUco</span>.</p>
         </div>
 
         <div class="step">
-            <h4>Bước 2: Bật Chế Độ In PDF</h4>
-            <p>Hãy bỏ qua phần tải 1 ảnh to đùng. Bạn cuộn xuống một chút xíu và bấm vào liên kết có chữ <span
-                    class="highlight">Generate PDF</span>.</p>
-        </div>
-
-        <div class="step">
-            <h4>Bước 3: Thiết Lập Tờ In</h4>
-            <p>Tại giao diện tạo PDF, bạn nhập:<br>
-                - Từ ID: <span class="highlight">1</span> - Đến ID: <span class="highlight">50</span><br>
-                - Markers per page (Thẻ/trang): Chọn <span class="highlight">4</span>
+            <h4>Bước 2: Thiết Lập Số Lượng</h4>
+            <p>
+                - First marker ID: <span class="highlight">1</span><br>
+                - Last marker ID: <span class="highlight">50</span> (In cho 50 em)<br>
+                - Marker size, mm: Nên để <span class="highlight">100</span> đến <span class="highlight">130</span>
             </p>
         </div>
 
         <div class="step">
-            <h4>Bước 4: Tải Về Máy</h4>
-            <p>Bấm nút <span class="highlight">Generate PDF</span> màu xanh. Xong! Bạn hãy mang file này ra ngoài quán
-                in.</p>
+            <h4>Bước 3: Mở Hộp Thoại In</h4>
+            <p>Cuộn xuống cuối trang, bạn sẽ thấy dòng chữ "You can click here to open...". Hãy bấm vào chữ <span class="highlight">click here</span> màu xanh lơ. (Hoặc bấm Ctrl + P trên bàn phím).</p>
+        </div>
+
+        <div class="step">
+            <h4>Bước 4: Lưu file PDF</h4>
+            <p>Khi bảng in của trình duyệt hiện ra, ở mục "Máy in" (Destination), bạn chọn <span class="highlight">Lưu dưới dạng PDF (Save as PDF)</span> rồi bấm nút Lưu.</p>
         </div>
 
         <div class="warning">
-            <strong>💡 MẸO CỦA CHUYÊN GIA:</strong><br>Hãy yêu cầu quán in <strong>Ép Plastic MỜ (Nhám)</strong> thay vì
-            plastic bóng. Plastic bóng sẽ phản chiếu ánh đèn huỳnh quang trong lớp học, làm lóa camera!
+            <strong>💡 MẸO CỦA CHUYÊN GIA:</strong><br>Hãy mang file PDF này ra tiệm photocopy. Nhớ yêu cầu thợ ép <strong>Plastic MỜ (Nhám)</strong> chống lóa nhé. Nếu ép plastic bóng, ánh đèn huỳnh quang trên trần lớp học sẽ phản chiếu lóa trắng, làm camera điện thoại không đọc được mã đâu!
         </div>
     </div>
 
     <div class="content">
-        <iframe src="https://chev.me/arucogen/" title="ArUco PDF Generator"></iframe>
+        <iframe src="https://fodi.github.io/arucosheetgen/" title="ArUco PDF Generator"></iframe>
     </div>
 </body>
 
