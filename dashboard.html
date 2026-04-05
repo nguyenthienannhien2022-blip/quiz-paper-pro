@@ -4,40 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Soạn Đề - Quiz Paper Pro</title>
-
+    <title>Studio Soạn Đề - Local Storage</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f6f9;
-            color: #333;
-            margin: 0;
             padding: 20px;
+            margin: 0;
         }
 
         .header {
             text-align: center;
             margin-bottom: 20px;
-        }
-
-        .header h2 {
             color: #8e44ad;
-            margin: 0;
-            font-size: 28px;
         }
 
-        .status {
-            font-weight: bold;
-            color: #e67e22;
-            margin-top: 10px;
-        }
-
-        /* [ĐÃ SỬA] Kéo dãn tràn viền Full HD */
         .main-grid {
             display: flex;
             flex-wrap: wrap;
@@ -54,13 +40,6 @@
             margin-bottom: 20px;
         }
 
-        .panel h3 {
-            margin-top: 0;
-            color: #2980b9;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
-        }
-
         .editor-panel {
             flex: 1.5;
             min-width: 350px;
@@ -69,8 +48,6 @@
         .preview-panel {
             flex: 1;
             min-width: 350px;
-            display: flex;
-            flex-direction: column;
         }
 
         .form-group {
@@ -78,73 +55,52 @@
         }
 
         label {
-            display: block;
             font-weight: bold;
             margin-bottom: 5px;
-            color: #34495e;
+            display: block;
         }
 
-        textarea,
         input[type="text"],
-        select {
+        select,
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #bdc3c7;
             border-radius: 5px;
             box-sizing: border-box;
-            font-family: inherit;
-            font-size: 14px;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 80px;
-        }
-
-        .hint {
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
-        .hint span {
-            background: #eee;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
         }
 
         .btn {
-            padding: 10px 15px;
-            font-size: 16px;
+            padding: 10px;
             font-weight: bold;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: 0.2s;
             color: white;
             width: 100%;
+            margin-bottom: 5px;
         }
 
         .btn-primary {
             background-color: #3498db;
-            margin-bottom: 10px;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
         }
 
         .btn-success {
             background-color: #2ecc71;
         }
 
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-
         .btn-warning {
             background-color: #f39c12;
+        }
+
+        .btn-excel {
+            background-color: #107c41;
+        }
+
+        .excel-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         #live-preview {
@@ -152,253 +108,195 @@
             padding: 15px;
             border-radius: 8px;
             border: 2px dashed #bdc3c7;
-            min-height: 150px;
-        }
-
-        .preview-img {
-            max-width: 100%;
-            max-height: 150px;
-            object-fit: contain;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .preview-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .preview-opt {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #bdc3c7;
-            font-weight: bold;
         }
 
         .question-list {
             list-style: none;
             padding: 0;
-            margin: 0;
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
         }
 
         .q-item {
             background: #f9f9f9;
-            padding: 15px;
+            padding: 10px;
             border: 1px solid #ddd;
+            margin-bottom: 5px;
             border-radius: 5px;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .q-item-text {
-            font-weight: bold;
-        }
-
-        .q-item-actions {
-            display: flex;
-            gap: 10px;
         }
     </style>
 </head>
 
 <body>
-
     <div class="header">
-        <h2>⚙️ STUDIO SOẠN ĐỀ & CÀI ĐẶT LỚP</h2>
-        <div class="status" id="status">⏳ Đang kết nối tới Máy chủ...</div>
+        <h2>⚙️ STUDIO SOẠN ĐỀ (LƯU CỤC BỘ)</h2>
+        <p style="color:#e67e22; font-weight:bold;">Dữ liệu tự động lưu an toàn trên máy tính của bạn!</p>
     </div>
 
     <div class="main-grid">
         <div class="editor-panel panel">
-            <h3>📝 Soạn Thảo Câu Hỏi</h3>
-            <input type="hidden" id="edit-id" value="">
-
+            <h3>📝 Soạn Câu Hỏi</h3>
+            <input type="hidden" id="edit-id">
             <div class="form-group" style="display: flex; gap: 15px;">
-                <div style="flex: 1;">
-                    <label>Loại câu hỏi:</label>
-                    <select id="q-type">
-                        <option value="4opts">Trắc nghiệm (4 đáp án)</option>
-                        <option value="tf">Đúng / Sai</option>
-                    </select>
-                </div>
-                <div style="flex: 1;">
-                    <label style="color: #e74c3c;">Đáp Án Đúng:</label>
-                    <select id="q-correct">
+                <div style="flex:1"><label>Loại:</label><select id="q-type">
+                        <option value="4opts">4 Đáp án</option>
+                        <option value="tf">Đúng/Sai</option>
+                    </select></div>
+                <div style="flex:1"><label>Đ/Án Đúng:</label><select id="q-correct">
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
                         <option value="D">D</option>
-                    </select>
-                </div>
+                    </select></div>
             </div>
-
-            <div class="form-group">
-                <label>Nội dung câu hỏi:</label>
-                <textarea id="q-text" placeholder="Nhập câu hỏi..."></textarea>
-                <div class="hint">Toán học: Kẹp công thức giữa <span>$</span> (ví dụ: <span>$x^2 + y^2 = z^2$</span>)
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Link ảnh (URL - Siêu nhẹ, Tùy chọn):</label>
-                <input type="text" id="q-image-url" placeholder="https://ví-dụ.com/anh1.jpg">
-            </div>
-
-            <div class="form-group">
-                <label>Đáp án A:</label><input type="text" id="opt-A" class="opt-input">
-                <label>Đáp án B:</label><input type="text" id="opt-B" class="opt-input">
-                <label>Đáp án C:</label><input type="text" id="opt-C" class="opt-input">
-                <label>Đáp án D:</label><input type="text" id="opt-D" class="opt-input">
-            </div>
-
-            <button class="btn btn-primary" id="btn-save">💾 LƯU CÂU HỎI VÀO NGÂN HÀNG</button>
-            <button class="btn btn-warning" id="btn-clear">Mới / Hủy Sửa</button>
+            <div class="form-group"><label>Nội dung:</label><textarea id="q-text" rows="3"></textarea></div>
+            <div class="form-group"><label>A:</label><input type="text" id="opt-A"> <label>B:</label><input type="text"
+                    id="opt-B"> <label>C:</label><input type="text" id="opt-C"> <label>D:</label><input type="text"
+                    id="opt-D"></div>
+            <button class="btn btn-primary" id="btn-save">💾 LƯU CÂU HỎI VÀO BỘ NHỚ MÁY</button>
+            <button class="btn btn-warning" id="btn-clear">LÀM MỚI FORM</button>
         </div>
 
         <div class="preview-panel">
             <div class="panel">
-                <h3 style="color: #16a085;">🧑‍🎓 Quản lý Danh sách Lớp</h3>
-                <div class="hint" style="margin-bottom: 10px;">Copy từ Excel dán vào đây (Mỗi dòng 1 tên).</div>
-                <textarea id="class-list" placeholder="Nguyễn Văn A&#10;Trần Thị B..."
-                    style="height: 120px;"></textarea>
-                <button class="btn btn-success" id="btn-save-class" style="margin-top: 10px;">💾 CẬP NHẬT TÊN (ĐỒNG BỘ
-                    SANG ĐIỆN THOẠI)</button>
-            </div>
-
-            <div class="panel">
-                <h3 style="color: #8e44ad;">👁️ Xem Trước Thực Tế</h3>
-                <div id="live-preview"></div>
-            </div>
-
-            <div class="panel">
-                <h3 style="color: #34495e;">📚 Ngân Hàng Câu Hỏi</h3>
+                <h3>📚 Ngân Hàng Câu Hỏi</h3>
                 <ul class="question-list" id="q-list"></ul>
+                <div class="excel-group">
+                    <button class="btn btn-excel" onclick="exportQuestionsExcel()">📥 Xuất Excel Câu Hỏi</button>
+                    <input type="file" id="import-q-file" style="display:none" accept=".xlsx, .xls"
+                        onchange="importQuestionsExcel(event)">
+                    <button class="btn btn-warning" onclick="document.getElementById('import-q-file').click()">📂 Nhập
+                        từ Excel</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>🧑‍🎓 Danh sách Lớp</h3>
+                <textarea id="class-list" rows="4" placeholder="Nguyễn Văn A&#10;Trần Thị B..."></textarea>
+                <button class="btn btn-success" onclick="saveClassList()">💾 LƯU DANH SÁCH LỚP</button>
+                <div class="excel-group">
+                    <button class="btn btn-excel" onclick="exportClassExcel()">📥 Xuất File Mẫu</button>
+                    <input type="file" id="import-c-file" style="display:none" accept=".xlsx, .xls"
+                        onchange="importClassExcel(event)">
+                    <button class="btn btn-warning" onclick="document.getElementById('import-c-file').click()">📂 Nhập
+                        Excel</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const socket = io();
-        const statusEl = document.getElementById('status');
-        let questionBank = [];
-
-        socket.on('connect', () => {
-            statusEl.innerText = '🟢 Đã kết nối! Studio sẵn sàng.';
-            statusEl.style.color = '#27ae60';
-        });
+        let questionBank = JSON.parse(localStorage.getItem('quiz_questions')) || [];
+        let classList = JSON.parse(localStorage.getItem('quiz_class')) || [];
 
         window.onload = () => {
-            fetch('/api/questions')
-                .then(res => res.json())
-                .then(data => { questionBank = data; renderQuestionList(); })
-                .catch(err => console.error("Chưa có database."));
-
-            const savedList = localStorage.getItem('classList');
-            if (savedList) {
-                document.getElementById('class-list').value = JSON.parse(savedList).join('\n');
-            }
-            updatePreview();
+            renderQuestionList();
+            document.getElementById('class-list').value = classList.join('\n');
         };
 
-        function syncToDatabase() {
-            fetch('/api/questions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(questionBank) });
+        function saveToStorage() {
+            localStorage.setItem('quiz_questions', JSON.stringify(questionBank));
+            renderQuestionList();
         }
 
-        const typeSelect = document.getElementById('q-type');
-        const correctSelect = document.getElementById('q-correct');
-        const optC = document.getElementById('opt-C');
-        const optD = document.getElementById('opt-D');
-
-        function toggleQuestionType(isTF) {
-            optC.disabled = isTF; optD.disabled = isTF;
-            correctSelect.options[2].disabled = isTF; correctSelect.options[3].disabled = isTF;
-            if (isTF) { optC.value = ''; optD.value = ''; if (correctSelect.value === 'C' || correctSelect.value === 'D') correctSelect.value = 'A'; }
-        }
-
-        typeSelect.addEventListener('change', (e) => {
-            const isTF = (e.target.value === 'tf'); toggleQuestionType(isTF);
-            if (isTF) { document.getElementById('opt-A').value = 'Đúng'; document.getElementById('opt-B').value = 'Sai'; }
-            else { document.getElementById('opt-A').value = ''; document.getElementById('opt-B').value = ''; }
-            updatePreview();
-        });
-
-        const inputs = ['q-text', 'opt-A', 'opt-B', 'opt-C', 'opt-D', 'q-image-url'];
-        inputs.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
-
-        function updatePreview() {
-            const previewEl = document.getElementById('live-preview');
-            const qText = document.getElementById('q-text').value || '<em>Chưa nhập nội dung...</em>';
-            const imgUrl = document.getElementById('q-image-url').value;
-            const isTF = (typeSelect.value === 'tf');
-
-            let imgHTML = imgUrl ? `<img src="${imgUrl}" class="preview-img" style="display:block;">` : '';
-            const optA = document.getElementById('opt-A').value || '...'; const optB = document.getElementById('opt-B').value || '...';
-            let optionsHTML = `<div class="preview-opt">A. ${optA}</div><div class="preview-opt">B. ${optB}</div>`;
-            if (!isTF) {
-                optionsHTML += `<div class="preview-opt">C. ${document.getElementById('opt-C').value || '...'}</div><div class="preview-opt">D. ${document.getElementById('opt-D').value || '...'}</div>`;
-            }
-
-            previewEl.innerHTML = `<div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">${qText}</div>${imgHTML}<div class="preview-options">${optionsHTML}</div>`;
-            renderMathInElement(previewEl, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
+        function saveClassList() {
+            const text = document.getElementById('class-list').value;
+            classList = text.split('\n').map(s => s.trim()).filter(s => s !== '');
+            localStorage.setItem('quiz_class', JSON.stringify(classList));
+            alert("Đã lưu danh sách lớp vào bộ nhớ máy!");
         }
 
         document.getElementById('btn-save').addEventListener('click', () => {
             const id = document.getElementById('edit-id').value;
-            const qData = {
-                id: id ? id : 'Q' + Date.now(), type: typeSelect.value, text: document.getElementById('q-text').value, imageUrl: document.getElementById('q-image-url').value,
+            const q = {
+                id: id || 'Q' + Date.now(), type: document.getElementById('q-type').value, text: document.getElementById('q-text').value,
                 options: { A: document.getElementById('opt-A').value, B: document.getElementById('opt-B').value, C: document.getElementById('opt-C').value, D: document.getElementById('opt-D').value },
                 correct: document.getElementById('q-correct').value
             };
-            if (!qData.text) { alert("Vui lòng nhập nội dung!"); return; }
-            if (id) { const index = questionBank.findIndex(q => q.id === id); if (index > -1) questionBank[index] = qData; } else { questionBank.push(qData); }
-            renderQuestionList(); syncToDatabase(); clearForm();
+            if (!q.text) return alert("Vui lòng nhập nội dung!");
+            if (id) { const idx = questionBank.findIndex(x => x.id === id); if (idx > -1) questionBank[idx] = q; }
+            else { questionBank.push(q); }
+            saveToStorage(); document.getElementById('btn-clear').click();
         });
 
-        document.getElementById('btn-clear').addEventListener('click', clearForm);
-
-        function clearForm() {
-            document.getElementById('edit-id').value = ''; document.getElementById('q-text').value = ''; document.getElementById('q-image-url').value = '';
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            document.getElementById('edit-id').value = ''; document.getElementById('q-text').value = '';
             document.getElementById('opt-A').value = ''; document.getElementById('opt-B').value = ''; document.getElementById('opt-C').value = ''; document.getElementById('opt-D').value = '';
-            typeSelect.value = '4opts'; toggleQuestionType(false); document.getElementById('btn-save').innerText = '💾 LƯU CÂU HỎI VÀO NGÂN HÀNG'; updatePreview();
-        }
+        });
 
         function renderQuestionList() {
             const listEl = document.getElementById('q-list'); listEl.innerHTML = '';
             questionBank.forEach((q, index) => {
                 const li = document.createElement('li'); li.className = 'q-item';
-                const shortText = q.text.length > 40 ? q.text.substring(0, 40) + '...' : q.text;
-                li.innerHTML = `
-                    <div class="q-item-text">Câu ${index + 1}: ${shortText} (Đ/án: ${q.correct})</div>
-                    <div class="q-item-actions">
-                        <button class="btn btn-warning" onclick="editQuestion('${q.id}')">✏️ Sửa</button>
-                    </div>`;
+                li.innerHTML = `<b>Câu ${index + 1}:</b> ${q.text.substring(0, 30)}... (Đ/A: ${q.correct}) <button onclick="deleteQ('${q.id}')" style="float:right; color:red; cursor:pointer; border:none; background:none;">Xóa</button>`;
                 listEl.appendChild(li);
             });
         }
 
-        window.editQuestion = function (id) {
-            const q = questionBank.find(q => q.id === id); if (!q) return;
-            document.getElementById('edit-id').value = q.id; typeSelect.value = q.type || '4opts'; toggleQuestionType(q.type === 'tf');
-            document.getElementById('q-text').value = q.text; document.getElementById('q-image-url').value = q.imageUrl || '';
-            document.getElementById('opt-A').value = q.options.A; document.getElementById('opt-B').value = q.options.B; document.getElementById('opt-C').value = q.options.C; document.getElementById('opt-D').value = q.options.D;
-            correctSelect.value = q.correct; document.getElementById('btn-save').innerText = '💾 CẬP NHẬT CÂU HỎI'; updatePreview(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        function deleteQ(id) {
+            if (confirm("Bạn có chắc muốn xóa câu này?")) {
+                questionBank = questionBank.filter(q => q.id !== id);
+                saveToStorage();
+            }
         }
 
-        document.getElementById('btn-save-class').addEventListener('click', () => {
-            const text = document.getElementById('class-list').value;
-            const studentNamesList = text.split('\n').map(s => s.trim()).filter(s => s !== '');
-            localStorage.setItem('classList', JSON.stringify(studentNamesList));
-            socket.emit('teacher_command', { action: 'update_class_list', students: studentNamesList });
-            alert("Đã đồng bộ danh sách lớp! Bạn có thể dùng điện thoại để điều khiển.");
-        });
+        // ================= EXCEL CÂU HỎI =================
+        function exportQuestionsExcel() {
+            const data = questionBank.map((q, i) => ({
+                "STT": i + 1, "Câu hỏi": q.text, "Đáp án A": q.options.A, "Đáp án B": q.options.B, "Đáp án C": q.options.C, "Đáp án D": q.options.D, "Đúng (A/B/C/D)": q.correct
+            }));
+            const ws = XLSX.utils.json_to_sheet(data.length ? data : [{ "STT": 1, "Câu hỏi": "Mẫu câu hỏi", "Đáp án A": "A", "Đáp án B": "B", "Đáp án C": "C", "Đáp án D": "D", "Đúng (A/B/C/D)": "A" }]);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "CauHoi");
+            XLSX.writeFile(wb, "NganHangCauHoi.xlsx");
+        }
+
+        function importQuestionsExcel(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const data = evt.target.result; const workbook = XLSX.read(data, { type: 'binary' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet);
+                rows.forEach(row => {
+                    if (row["Câu hỏi"]) {
+                        questionBank.push({
+                            id: 'Q' + Date.now() + Math.random(), type: '4opts', text: row["Câu hỏi"],
+                            options: { A: row["Đáp án A"] || '', B: row["Đáp án B"] || '', C: row["Đáp án C"] || '', D: row["Đáp án D"] || '' },
+                            correct: row["Đúng (A/B/C/D)"]?.toUpperCase() || 'A'
+                        });
+                    }
+                });
+                saveToStorage(); alert("Đã nhập thành công từ Excel!");
+                e.target.value = ""; // Reset input
+            };
+            reader.readAsBinaryString(file);
+        }
+
+        // ================= EXCEL DANH SÁCH LỚP =================
+        function exportClassExcel() {
+            const data = classList.length ? classList.map((n, i) => ({ "ID Thẻ": i + 1, "Họ và Tên": n })) : [{ "ID Thẻ": 1, "Họ và Tên": "Nguyễn Văn Mẫu" }];
+            const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "DanhSach");
+            XLSX.writeFile(wb, "DanhSachLop.xlsx");
+        }
+
+        function importClassExcel(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const data = evt.target.result; const workbook = XLSX.read(data, { type: 'binary' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet);
+                let newClass = [];
+                rows.forEach(row => { if (row["Họ và Tên"]) newClass.push(row["Họ và Tên"]); });
+                if (newClass.length > 0) {
+                    classList = newClass;
+                    document.getElementById('class-list').value = classList.join('\n');
+                    saveClassList();
+                }
+                e.target.value = "";
+            };
+            reader.readAsBinaryString(file);
+        }
     </script>
 </body>
 

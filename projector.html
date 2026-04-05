@@ -4,12 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Màn Hình Máy Chiếu - QuizPaperMode</title>
-
+    <title>Màn Hình Máy Chiếu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,12 +16,10 @@
             text-align: center;
             padding: 20px;
             margin: 0;
-            cursor: pointer;
         }
 
         .container {
             max-width: 98%;
-            width: 100%;
             margin: 0 auto;
             background: white;
             padding: 30px;
@@ -32,17 +28,15 @@
             min-height: 90vh;
             display: flex;
             flex-direction: column;
-            box-sizing: border-box;
-            position: relative;
         }
 
         .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             border-bottom: 2px solid #ecf0f1;
             padding-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         h1 {
@@ -70,17 +64,14 @@
             height: 25px;
             background-color: #ecf0f1;
             border-radius: 12px;
-            margin-bottom: 20px;
-            overflow: hidden;
             display: none;
-            border: 2px solid #bdc3c7;
         }
 
         .timer-bar {
             height: 100%;
             width: 100%;
             background-color: #2ecc71;
-            transition: width 1s linear, background-color 0.5s ease;
+            transition: width 1s linear;
         }
 
         .question-board {
@@ -93,7 +84,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.3s ease;
         }
 
         .q-text {
@@ -103,44 +93,25 @@
             margin-bottom: 20px;
         }
 
-        .q-images {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .q-images img {
-            max-width: 700px;
-            max-height: 450px;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             text-align: left;
-            max-width: 100%;
-            margin: 0 auto;
-            width: 100%;
         }
 
         .opt-box {
             background: white;
-            padding: 20px 25px;
+            padding: 20px;
             font-size: 28px;
             font-weight: bold;
             border-radius: 10px;
             border: 2px solid #bdc3c7;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
         }
 
         .opt-label {
-            display: inline-block;
             min-width: 50px;
             height: 50px;
             line-height: 50px;
@@ -149,7 +120,6 @@
             color: white;
             border-radius: 50%;
             margin-right: 15px;
-            font-size: 24px;
         }
 
         .student-grid {
@@ -173,11 +143,8 @@
             justify-content: center;
             font-size: 15px;
             font-weight: bold;
-            transition: all 0.3s ease;
             padding: 4px;
             text-align: center;
-            line-height: 1.3;
-            overflow: hidden;
         }
 
         .student-card.submitted {
@@ -191,25 +158,20 @@
             background-color: #2ecc71;
             color: white;
             border-color: #27ae60;
-            transform: scale(1.1);
         }
 
         .student-card.incorrect {
             background-color: #e74c3c;
             color: white;
             border-color: #c0392b;
-            transform: scale(0.95);
         }
 
-        /* GIAO DIỆN BẢNG XẾP HẠNG TỐI ƯU */
         #leaderboard-board {
             display: none;
             width: 100%;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             flex-grow: 1;
-            padding: 20px;
         }
 
         #leaderboard-grid {
@@ -221,7 +183,6 @@
             margin-top: 20px;
         }
 
-        /* [ĐÃ NỚI RỘNG] Tăng chiều ngang thẻ từ 280px lên 380px để chứa đủ tên */
         .lb-card {
             width: 380px;
             padding: 15px 25px;
@@ -233,8 +194,6 @@
             align-items: center;
             background: #fff;
             border: 3px solid #bdc3c7;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
         }
 
         .lb-card.top1 {
@@ -242,9 +201,6 @@
             border-color: #f1c40f;
             color: #d35400;
             transform: scale(1.15);
-            box-shadow: 0 8px 20px rgba(241, 196, 15, 0.4);
-            z-index: 3;
-            margin: 10px;
         }
 
         .lb-card.top2 {
@@ -252,9 +208,6 @@
             border-color: #95a5a6;
             color: #7f8c8d;
             transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(149, 165, 166, 0.4);
-            z-index: 2;
-            margin: 10px;
         }
 
         .lb-card.top3 {
@@ -262,12 +215,8 @@
             border-color: #d35400;
             color: #a04000;
             transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(211, 84, 0, 0.4);
-            z-index: 2;
-            margin: 10px;
         }
 
-        /* [ĐÃ NỚI RỘNG] Không gian hiển thị tên trọn vẹn */
         .lb-name {
             white-space: nowrap;
             overflow: hidden;
@@ -281,121 +230,82 @@
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
-            font-size: 20px;
-        }
-
-        .lb-card.top1 .lb-score {
-            background: #f39c12;
-        }
-
-        .lb-card.top2 .lb-score {
-            background: #7f8c8d;
-        }
-
-        .lb-card.top3 .lb-score {
-            background: #d35400;
         }
     </style>
-
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-
     <div class="container">
         <div class="header-bar">
-            <h1>📊 Màn Hình Tương Tác Lớp Học</h1>
-            <div class="status" id="connection-status">⏳ Đang kết nối tới Máy chủ...</div>
+            <h1 id="room-title">📊 Màn Hình Tương Tác</h1>
+            <div class="status" id="connection-status">Đang kết nối...</div>
         </div>
 
-        <div class="timer-text" id="timer-text">⏳ Thời gian còn lại: <span id="time-left">0</span> giây</div>
+        <div class="timer-text" id="timer-text">⏳ <span id="time-left">0</span> giây</div>
         <div class="timer-container" id="timer-container">
             <div class="timer-bar" id="timer-bar"></div>
         </div>
 
         <div class="question-board" id="question-board">
-            <div class="q-text" style="color: #7f8c8d; font-size: 24px;">
-                Đang chờ giáo viên phát đề...
-            </div>
+            <div class="q-text" style="color: #7f8c8d;">Đang chờ giáo viên phát đề...</div>
         </div>
-
         <div class="student-grid" id="student-grid"></div>
 
         <div id="leaderboard-board">
-            <h2 style="font-size: 46px; color: #8e44ad; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-                🏆 BẢNG VÀNG LỚP HỌC 🏆</h2>
-            <p style="font-size: 22px; color: #7f8c8d; margin-top: 0; margin-bottom: 20px;">Dựa trên số câu trả lời đúng
-            </p>
+            <h2 style="font-size: 46px; color: #8e44ad;">🏆 BẢNG VÀNG LỚP HỌC 🏆</h2>
             <div id="leaderboard-grid"></div>
         </div>
-
     </div>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('room') || 'DEMO';
+        document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
+
+        // Lấy dữ liệu từ Laptop
+        const localQuestions = JSON.parse(localStorage.getItem('quiz_questions')) || [];
+        const localClass = JSON.parse(localStorage.getItem('quiz_class')) || [];
+
         let studentSubmissions = {};
-        let studentNames = [];
-        let totalStudents = 50;
+        let totalStudents = localClass.length > 0 ? localClass.length : 50;
         let countdownInterval;
 
-        const audioTinhGio = new Audio('/tinh-gio-choi.mp3');
+        const audioTinhGio = new Audio('/tinh-gio-choi.mp3'); audioTinhGio.loop = true;
         const audioHetGio = new Audio('/hetgio.mp3');
         const audioChucMung = new Audio('/chucmung.mp3');
-        audioTinhGio.loop = true;
+        function stopAllAudio() { audioTinhGio.pause(); audioTinhGio.currentTime = 0; audioHetGio.pause(); audioHetGio.currentTime = 0; audioChucMung.pause(); audioChucMung.currentTime = 0; }
 
-        function stopAllAudio() {
-            audioTinhGio.pause(); audioTinhGio.currentTime = 0;
-            audioHetGio.pause(); audioHetGio.currentTime = 0;
-            audioChucMung.pause(); audioChucMung.currentTime = 0;
-        }
-
-        document.body.addEventListener('click', () => {
-            console.log("Sẵn sàng phát nhạc nền mp3!");
-        });
-
-        function getStudentLabel(id) {
-            if (studentNames && studentNames[id - 1]) return studentNames[id - 1];
-            return `ID: ${id}`;
-        }
+        function getStudentLabel(id) { return localClass[id - 1] || `ID: ${id}`; }
 
         function renderStudentGrid() {
-            const grid = document.getElementById('student-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('student-grid'); grid.innerHTML = '';
             for (let i = 1; i <= totalStudents; i++) {
-                const card = document.createElement('div');
-                card.className = 'student-card';
-                card.id = `student-${i}`;
-
-                let currentStatus = "";
-                if (studentSubmissions[i]) {
-                    currentStatus = "\n✔️";
-                }
-                card.innerText = getStudentLabel(i) + (document.getElementById('timer-container').style.display === 'block' && studentSubmissions[i] ? currentStatus : '');
+                const card = document.createElement('div'); card.className = 'student-card'; card.id = `student-${i}`;
+                card.innerText = getStudentLabel(i) + (studentSubmissions[i] && document.getElementById('timer-container').style.display === 'block' ? "\n✔️" : "");
                 grid.appendChild(card);
             }
         }
-
         renderStudentGrid();
 
-        const statusText = document.getElementById('connection-status');
         const socket = io();
-
         socket.on('connect', () => {
-            statusText.innerHTML = "🟢 Đã kết nối! <br><span style='font-size:12px;color:#7f8c8d;'>(Nhấp chuột 1 lần vào vùng trắng để bật âm thanh)</span>";
-            statusText.style.color = "#27ae60";
+            document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
+            socket.emit('join_room', roomCode);
         });
 
-        socket.on('disconnect', () => {
-            statusText.innerText = "🔴 Mất kết nối tới Máy chủ!";
-            statusText.style.color = "#c0392b";
+        // KHI ĐIỆN THOẠI QUÉT VÀO PHÒNG -> MÁY CHIẾU LẬP TỨC ĐẨY DỮ LIỆU SANG
+        socket.on('device_joined', () => {
+            console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
+            socket.emit('sync_data_to_phone', {
+                room: roomCode, questions: localQuestions, students: localClass
+            });
         });
 
         socket.on('update_projector', (data) => {
             studentSubmissions[data.studentId] = data.answer;
-            const studentCard = document.getElementById(`student-${data.studentId}`);
-            if (studentCard) {
-                studentCard.className = 'student-card submitted';
-                studentCard.innerText = `${getStudentLabel(data.studentId)}\n✔️`;
-            }
+            const c = document.getElementById(`student-${data.studentId}`);
+            if (c) { c.className = 'student-card submitted'; c.innerText = `${getStudentLabel(data.studentId)}\n✔️`; }
         });
 
         socket.on('execute_command', (data) => {
@@ -405,171 +315,60 @@
                 document.getElementById('student-grid').style.display = 'flex';
             }
 
-            if (data.action === 'update_class_list') {
-                studentNames = data.students;
-                totalStudents = studentNames.length > 0 ? studentNames.length : 50;
-                renderStudentGrid();
-            }
-
             if (data.action === 'start_timer') {
-                clearInterval(countdownInterval);
-                stopAllAudio();
-                audioTinhGio.play().catch(e => console.log("Yêu cầu click chuột để bật nhạc"));
-
-                let duration = data.duration;
-                let timeLeft = duration;
-
-                const timerContainer = document.getElementById('timer-container');
-                const timerBar = document.getElementById('timer-bar');
-                const timerTextUI = document.getElementById('timer-text');
-
-                timerContainer.style.display = 'block';
-                timerTextUI.style.display = 'block';
-                timerTextUI.innerHTML = `⏳ Thời gian còn lại: <span id="time-left">${timeLeft}</span> giây`;
-
-                timerBar.style.transition = 'none';
-                timerBar.style.width = '100%';
-                timerBar.style.backgroundColor = '#2ecc71';
-
-                void timerBar.offsetWidth;
-                timerBar.style.transition = 'width 1s linear, background-color 0.5s ease';
+                clearInterval(countdownInterval); stopAllAudio(); audioTinhGio.play().catch(e => { });
+                let timeLeft = data.duration;
+                document.getElementById('timer-container').style.display = 'block';
+                document.getElementById('timer-text').style.display = 'block';
+                document.getElementById('time-left').innerText = timeLeft;
+                document.getElementById('timer-bar').style.width = '100%';
 
                 countdownInterval = setInterval(() => {
-                    timeLeft--;
-                    document.getElementById('time-left').innerText = timeLeft;
-
-                    let percentage = (timeLeft / duration) * 100;
-                    timerBar.style.width = percentage + '%';
-
-                    if (percentage <= 50 && percentage > 20) {
-                        timerBar.style.backgroundColor = '#f1c40f';
-                    } else if (percentage <= 20) {
-                        timerBar.style.backgroundColor = '#e74c3c';
-                    }
-
-                    if (timeLeft <= 0) {
-                        clearInterval(countdownInterval);
-                        document.getElementById('time-left').innerText = "0";
-                        timerTextUI.innerHTML = "⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI!";
-                        stopAllAudio();
-                        audioHetGio.play().catch(e => console.log("Lỗi âm thanh hết giờ"));
-                    }
+                    timeLeft--; document.getElementById('time-left').innerText = timeLeft;
+                    document.getElementById('timer-bar').style.width = (timeLeft / data.duration * 100) + '%';
+                    if (timeLeft <= 0) { clearInterval(countdownInterval); stopAllAudio(); audioHetGio.play().catch(e => { }); }
                 }, 1000);
             }
 
             if (data.action === 'show_question') {
-                stopAllAudio();
-                clearInterval(countdownInterval);
-                document.getElementById('timer-container').style.display = 'none';
-                document.getElementById('timer-text').style.display = 'none';
+                stopAllAudio(); clearInterval(countdownInterval);
+                document.getElementById('timer-container').style.display = 'none'; document.getElementById('timer-text').style.display = 'none';
 
-                // [MỚI CHÈN] TỰ ĐỘNG LÀM SẠCH KẾT QUẢ CŨ (THAY THẾ VIỆC PHẢI BẤM NÚT LÀM MỚI)
-                studentSubmissions = {};
-                for (let i = 1; i <= totalStudents; i++) {
-                    const card = document.getElementById(`student-${i}`);
-                    if (card) {
-                        card.className = 'student-card';
-                        card.innerText = getStudentLabel(i);
-                    }
-                }
+                // Dọn sạch bảng điểm câu cũ
+                studentSubmissions = {}; renderStudentGrid();
 
                 const q = data.questionData;
-                const board = document.getElementById('question-board');
-                let imgHTML = '';
-                if (q.imageUrl && q.imageUrl.trim() !== '') {
-                    imgHTML = `<div class="q-images"><img src="${q.imageUrl}"></div>`;
-                }
-
-                let optionsHTML = `
-                    <div class="opt-box"><span class="opt-label">A</span> <div>${q.options.A}</div></div>
-                    <div class="opt-box"><span class="opt-label">B</span> <div>${q.options.B}</div></div>
-                `;
-                if (q.type !== 'tf') {
-                    optionsHTML += `
-                        <div class="opt-box"><span class="opt-label">C</span> <div>${q.options.C}</div></div>
-                        <div class="opt-box"><span class="opt-label">D</span> <div>${q.options.D}</div></div>
-                    `;
-                }
-
-                board.innerHTML = `<div class="q-text">${q.text}</div>${imgHTML}<div class="options-grid">${optionsHTML}</div>`;
-
-                renderMathInElement(board, {
-                    delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
-                    throwOnError: false
-                });
+                let opts = `<div class="opt-box"><span class="opt-label">A</span> <div>${q.options.A}</div></div><div class="opt-box"><span class="opt-label">B</span> <div>${q.options.B}</div></div>`;
+                if (q.type !== 'tf') opts += `<div class="opt-box"><span class="opt-label">C</span> <div>${q.options.C}</div></div><div class="opt-box"><span class="opt-label">D</span> <div>${q.options.D}</div></div>`;
+                document.getElementById('question-board').innerHTML = `<div class="q-text">${q.text}</div><div class="options-grid">${opts}</div>`;
+                renderMathInElement(document.getElementById('question-board'), { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
             }
 
             if (data.action === 'reveal') {
-                clearInterval(countdownInterval);
-                stopAllAudio();
-                audioChucMung.play().catch(e => console.log("Lỗi âm thanh chúc mừng"));
-
-                const correctQuestionAnswer = data.correctAnswer;
-                for (const [id, answer] of Object.entries(studentSubmissions)) {
-                    const card = document.getElementById(`student-${id}`);
-                    if (!card) continue;
-
-                    if (answer === correctQuestionAnswer) {
-                        card.className = 'student-card correct';
-                        card.innerText = `${getStudentLabel(id)}\n${answer}`;
-                    } else {
-                        card.className = 'student-card incorrect';
-                        card.innerText = `${getStudentLabel(id)}\n${answer}`;
-                    }
+                clearInterval(countdownInterval); stopAllAudio(); audioChucMung.play().catch(e => { });
+                for (const [id, ans] of Object.entries(studentSubmissions)) {
+                    const c = document.getElementById(`student-${id}`);
+                    if (!c) continue;
+                    if (ans === data.correctAnswer) { c.className = 'student-card correct'; c.innerText = `${getStudentLabel(id)}\n${ans}`; }
+                    else { c.className = 'student-card incorrect'; c.innerText = `${getStudentLabel(id)}\n${ans}`; }
                 }
             }
 
-            if (data.action === 'reset') {
-                stopAllAudio();
-                clearInterval(countdownInterval);
-                document.getElementById('timer-container').style.display = 'none';
-                document.getElementById('timer-text').style.display = 'none';
-
-                studentSubmissions = {};
-                renderStudentGrid();
-                document.getElementById('question-board').innerHTML = `
-                    <div class="q-text" style="color: #7f8c8d; font-size: 24px;">
-                        Đang chờ giáo viên phát đề...
-                    </div>
-                `;
-            }
-
             if (data.action === 'show_leaderboard') {
-                stopAllAudio();
-                audioChucMung.play().catch(e => console.log("Lỗi âm thanh chúc mừng"));
+                stopAllAudio(); audioChucMung.play().catch(e => { });
+                document.getElementById('question-board').style.display = 'none'; document.getElementById('student-grid').style.display = 'none';
+                document.getElementById('timer-container').style.display = 'none'; document.getElementById('timer-text').style.display = 'none';
 
-                document.getElementById('question-board').style.display = 'none';
-                document.getElementById('student-grid').style.display = 'none';
-                document.getElementById('timer-container').style.display = 'none';
-                document.getElementById('timer-text').style.display = 'none';
+                document.getElementById('leaderboard-board').style.display = 'flex';
+                const lbGrid = document.getElementById('leaderboard-grid'); lbGrid.innerHTML = '';
 
-                const lbBoard = document.getElementById('leaderboard-board');
-                const lbGrid = document.getElementById('leaderboard-grid');
-                lbBoard.style.display = 'flex';
-                lbGrid.innerHTML = '';
-
-                const leaderboard = data.leaderboard;
-
-                leaderboard.forEach((student, index) => {
+                data.leaderboard.forEach((student, index) => {
                     if (student.score === 0 && index > 2) return;
-
-                    const card = document.createElement('div');
-                    card.className = 'lb-card';
-
+                    const card = document.createElement('div'); card.className = 'lb-card';
                     let rankIcon = `#${index + 1}`;
-                    if (index === 0 && student.score > 0) { card.classList.add('top1'); rankIcon = '🥇'; }
-                    else if (index === 1 && student.score > 0) { card.classList.add('top2'); rankIcon = '🥈'; }
-                    else if (index === 2 && student.score > 0) { card.classList.add('top3'); rankIcon = '🥉'; }
+                    if (index === 0 && student.score > 0) { card.classList.add('top1'); rankIcon = '🥇'; } else if (index === 1 && student.score > 0) { card.classList.add('top2'); rankIcon = '🥈'; } else if (index === 2 && student.score > 0) { card.classList.add('top3'); rankIcon = '🥉'; }
 
-                    const realName = getStudentLabel(student.id);
-
-                    card.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 28px; min-width: 40px; text-align: center;">${rankIcon}</span>
-                            <span class="lb-name" title="${realName}">${realName}</span>
-                        </div>
-                        <span class="lb-score">${student.score} Điểm</span>
-                    `;
+                    card.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><span style="font-size:28px;">${rankIcon}</span><span class="lb-name">${getStudentLabel(student.id)}</span></div><span class="lb-score">${student.score} Điểm</span>`;
                     lbGrid.appendChild(card);
                 });
             }

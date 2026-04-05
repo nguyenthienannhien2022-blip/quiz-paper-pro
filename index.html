@@ -10,45 +10,33 @@
             --primary: #4e54c8;
             --secondary: #8f94fb;
             --play: #2ecc71;
-            --play-hover: #27ae60;
             --studio: #9b59b6;
-            --studio-hover: #8e44ad;
             --rules: #f39c12;
-            --rules-hover: #e67e22;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Thêm hình nền phong cách lớp học cực đẹp, kết hợp phủ màu Gradient cho chữ nổi bật */
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 73, 94, 0.9)),
-                url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop') center/cover;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.85), rgba(52, 73, 94, 0.9)), url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop') center/cover;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
-            overflow: hidden;
         }
 
         .hero-title {
             font-size: 5.5rem;
-            /* Phóng to chữ cực đại */
             font-weight: 900;
             margin-bottom: 10px;
             text-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
             text-align: center;
-            letter-spacing: 2px;
         }
 
         .subtitle {
             font-size: 1.5rem;
-            /* Phóng to chữ phụ */
             margin-bottom: 50px;
-            opacity: 0.9;
-            text-align: center;
             text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
         }
 
@@ -68,7 +56,7 @@
             font-weight: bold;
             color: white;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -79,38 +67,20 @@
 
         .btn-main:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .btn-main:active {
-            transform: translateY(2px);
         }
 
         .btn-play {
             background-color: var(--play);
         }
 
-        .btn-play:hover {
-            background-color: var(--play-hover);
-        }
-
         .btn-studio {
             background-color: var(--studio);
-        }
-
-        .btn-studio:hover {
-            background-color: var(--studio-hover);
         }
 
         .btn-rules {
             background-color: var(--rules);
         }
 
-        .btn-rules:hover {
-            background-color: var(--rules-hover);
-        }
-
-        /* MODAL (Hộp thoại Popup) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -118,7 +88,6 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -143,7 +112,6 @@
             position: relative;
             transform: scale(0.8);
             transition: 0.3s;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
         }
 
         .modal-overlay.active .modal-content {
@@ -155,20 +123,21 @@
             top: 15px;
             right: 20px;
             font-size: 28px;
-            font-weight: bold;
             cursor: pointer;
             color: #7f8c8d;
         }
 
-        .modal-close:hover {
-            color: #e74c3c;
-        }
-
-        h2.modal-title {
-            color: #2c3e50;
-            margin-top: 0;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
+        .room-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            border: 3px solid #3498db;
+            border-radius: 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
         .play-option {
@@ -183,12 +152,7 @@
             text-decoration: none;
             color: #2c3e50;
             font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .play-option:hover {
-            border-color: var(--primary);
-            background: #eef2fa;
+            cursor: pointer;
         }
 
         .qr-box {
@@ -201,28 +165,12 @@
             border-radius: 10px;
             margin-bottom: 15px;
         }
-
-        .rules-text {
-            line-height: 1.6;
-            color: #34495e;
-            font-size: 1.1rem;
-        }
-
-        .rules-text ul {
-            padding-left: 20px;
-        }
-
-        .rules-text li {
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 
 <body>
-
     <div class="hero-title">🚀 Quiz Paper</div>
     <div class="subtitle">Nền tảng Trắc nghiệm Thời gian thực dành cho Lớp học</div>
-
     <div class="menu-grid">
         <button class="btn-main btn-play" onclick="openModal('playModal')">▶ BẮT ĐẦU CHƠI</button>
         <a href="/dashboard" class="btn-main btn-studio">⚙️ CÀI ĐẶT CÂU HỎI (STUDIO)</a>
@@ -232,25 +180,29 @@
     <div class="modal-overlay" id="playModal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('playModal')">&times;</span>
-            <h2 class="modal-title">🎮 Sẵn sàng lên lớp!</h2>
+            <h2 style="margin-top:0; border-bottom: 2px solid #eee; padding-bottom: 10px;">🎮 Kết nối Lớp học</h2>
 
-            <a href="/projector" target="_blank" class="play-option">
+            <label style="font-weight: bold; color: #e74c3c; font-size: 18px;">Nhập Mã Phòng (VD: LOP6A):</label>
+            <input type="text" id="room-code" class="room-input" placeholder="NHẬP MÃ PHÒNG VÀO ĐÂY"
+                oninput="updateRoom()">
+
+            <div class="play-option" onclick="openProjector()">
                 <span style="font-size: 32px;">📺</span>
                 <div>
                     <div style="font-size: 18px;">Mở Màn Hình Máy Chiếu</div>
                     <div style="font-size: 13px; color: #7f8c8d; font-weight: normal;">Nhấp chuột 1 cái vào màn hình để
                         đánh thức loa</div>
                 </div>
-            </a>
+            </div>
 
             <div class="qr-box">
                 <img id="qr-code-img" src="" alt="QR Máy Quét" width="120" height="120" style="border-radius: 8px;">
                 <div>
-                    <div style="font-size: 18px; color: #2c3e50; font-weight: bold; margin-bottom: 5px;">Mở Máy Quét
-                        Bằng Điện Thoại</div>
-                    <div style="font-size: 14px; color: #7f8c8d; font-weight: normal; margin-bottom: 10px;">Mở
-                        Camera/Zalo trên điện thoại quét mã QR bên cạnh để điều khiển.</div>
-                    <a href="/scanner" target="_blank"
+                    <div style="font-size: 18px; color: #2c3e50; font-weight: bold; margin-bottom: 5px;">Quét để mở Điều
+                        Khiển</div>
+                    <div style="font-size: 14px; color: #7f8c8d; font-weight: normal; margin-bottom: 10px;">Dùng
+                        Zalo/Camera điện thoại quét mã này.</div>
+                    <a href="#" onclick="openScanner()"
                         style="color: #3498db; text-decoration: underline; font-size: 14px;">Hoặc bấm vào đây nếu đang
                         dùng ĐT</a>
                 </div>
@@ -261,48 +213,36 @@
     <div class="modal-overlay" id="rulesModal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('rulesModal')">&times;</span>
-            <h2 class="modal-title">📖 Hướng Dẫn Vận Hành</h2>
-            <div class="rules-text">
-                <ul>
-                    <li><strong>Chuẩn bị:</strong> Giáo viên vào mục <em>Studio</em> để soạn đề và điền tên học sinh.
-                    </li>
-                    <li><strong>Trên lớp:</strong> Phát thẻ cho học sinh (Thẻ ID khớp với số thứ tự trong danh sách
-                        lớp).</li>
-                    <li><strong>Kết nối:</strong> Laptop mở <em>Máy chiếu</em>. Điện thoại quét mã QR để mở <em>Máy
-                            quét</em>.</li>
-                    <li><strong>Cách quét thẻ:</strong> Học sinh giơ thẻ. Giáo viên dùng điện thoại quét một vòng lớp
-                        học.</li>
-                    <li><strong>Chấm điểm:</strong> Bấm "Chấm điểm" trên điện thoại và tải ngay bảng điểm Excel về máy.
-                    </li>
-                </ul>
-                <div style="margin-top: 20px; text-align: center;">
-                    <a href="/marker" target="_blank"
-                        style="color: #e67e22; font-weight: bold; text-decoration: none; font-size: 1.2rem;">🖨️ Mở
-                        xưởng in thẻ tại đây</a>
-                </div>
-            </div>
+            <h2>📖 Hướng Dẫn</h2>
+            <p>1. Vào Studio soạn đề. Dữ liệu sẽ lưu thẳng vào máy tính của bạn.</p>
+            <p>2. Khi dạy, bấm Bắt đầu chơi, nhập 1 Mã phòng bất kỳ (VD: TOAN1).</p>
+            <p>3. Mở Máy chiếu trên máy tính. Dùng điện thoại quét mã QR để làm điều khiển.</p>
+            <a href="/marker" target="_blank" style="color: #e67e22; font-weight: bold;">🖨️ Mở xưởng in thẻ tại đây</a>
         </div>
     </div>
 
     <script>
-        // Tự động sinh mã QR đúng với tên miền website
-        window.onload = function () {
-            const scannerUrl = window.location.origin + '/scanner';
+        function openModal(id) { document.getElementById(id).classList.add('active'); updateRoom(); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = function (e) { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); }
+
+        function updateRoom() {
+            let room = document.getElementById('room-code').value.trim().toUpperCase();
+            if (!room) room = "DEMO";
+            const scannerUrl = window.location.origin + '/scanner?room=' + encodeURIComponent(room);
             document.getElementById('qr-code-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(scannerUrl);
         }
 
-        function openModal(id) {
-            document.getElementById(id).classList.add('active');
+        function openProjector() {
+            let room = document.getElementById('room-code').value.trim().toUpperCase();
+            if (!room) return alert("Vui lòng nhập Mã Phòng!");
+            window.open('/projector?room=' + encodeURIComponent(room), '_blank');
         }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        window.onclick = function (event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.classList.remove('active');
-            }
+        function openScanner() {
+            let room = document.getElementById('room-code').value.trim().toUpperCase();
+            if (!room) return alert("Vui lòng nhập Mã Phòng!");
+            window.open('/scanner?room=' + encodeURIComponent(room), '_blank');
         }
     </script>
 </body>
