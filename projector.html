@@ -201,7 +201,7 @@
             transform: scale(0.95);
         }
 
-        /* GIAO DIỆN BẢNG XẾP HẠNG */
+        /* GIAO DIỆN BẢNG XẾP HẠNG TỐI ƯU */
         #leaderboard-board {
             display: none;
             width: 100%;
@@ -216,14 +216,15 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             width: 100%;
             margin-top: 20px;
         }
 
+        /* [ĐÃ NỚI RỘNG] Tăng chiều ngang thẻ từ 280px lên 380px để chứa đủ tên */
         .lb-card {
-            width: 280px;
-            padding: 15px 20px;
+            width: 380px;
+            padding: 15px 25px;
             border-radius: 12px;
             font-size: 22px;
             font-weight: bold;
@@ -240,7 +241,7 @@
             background: #fffcf0;
             border-color: #f1c40f;
             color: #d35400;
-            transform: scale(1.2);
+            transform: scale(1.15);
             box-shadow: 0 8px 20px rgba(241, 196, 15, 0.4);
             z-index: 3;
             margin: 10px;
@@ -250,7 +251,7 @@
             background: #f8f9fa;
             border-color: #95a5a6;
             color: #7f8c8d;
-            transform: scale(1.1);
+            transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(149, 165, 166, 0.4);
             z-index: 2;
             margin: 10px;
@@ -260,17 +261,18 @@
             background: #fdf5e6;
             border-color: #d35400;
             color: #a04000;
-            transform: scale(1.1);
+            transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(211, 84, 0, 0.4);
             z-index: 2;
             margin: 10px;
         }
 
+        /* [ĐÃ NỚI RỘNG] Không gian hiển thị tên trọn vẹn */
         .lb-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 170px;
+            max-width: 250px;
             text-align: left;
         }
 
@@ -461,6 +463,16 @@
                 document.getElementById('timer-container').style.display = 'none';
                 document.getElementById('timer-text').style.display = 'none';
 
+                // [MỚI CHÈN] TỰ ĐỘNG LÀM SẠCH KẾT QUẢ CŨ (THAY THẾ VIỆC PHẢI BẤM NÚT LÀM MỚI)
+                studentSubmissions = {};
+                for (let i = 1; i <= totalStudents; i++) {
+                    const card = document.getElementById(`student-${i}`);
+                    if (card) {
+                        card.className = 'student-card';
+                        card.innerText = getStudentLabel(i);
+                    }
+                }
+
                 const q = data.questionData;
                 const board = document.getElementById('question-board');
                 let imgHTML = '';
@@ -549,7 +561,6 @@
                     else if (index === 1 && student.score > 0) { card.classList.add('top2'); rankIcon = '🥈'; }
                     else if (index === 2 && student.score > 0) { card.classList.add('top3'); rankIcon = '🥉'; }
 
-                    // [QUAN TRỌNG] Máy chiếu tự dịch ID thành Tên thật bằng trí nhớ của chính nó!
                     const realName = getStudentLabel(student.id);
 
                     card.innerHTML = `
