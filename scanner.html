@@ -48,6 +48,7 @@
             height: 100%;
         }
 
+        /* Đã thêm hiệu ứng mượt mà cho thanh trạng thái */
         .status-bar {
             padding: 10px;
             background-color: #333;
@@ -58,6 +59,8 @@
             max-width: 500px;
             margin-bottom: 15px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-weight: bold;
         }
 
         .control-panel {
@@ -299,7 +302,19 @@
         socket.on('execute_command', (data) => {
             if (data.action === 'update_class_list') {
                 studentNamesList = data.students;
-                alert("Đã nhận danh sách lớp từ máy tính. Sẵn sàng chấm điểm!");
+
+                // [ĐÃ SỬA LỖI ĐƠ CAMERA]
+                // Bỏ hàm alert(), thay bằng hiệu ứng nhấp nháy thanh trạng thái
+                statusElement.innerText = `✅ Đã đồng bộ ${studentNamesList.length} học sinh!`;
+                statusElement.style.backgroundColor = "#2ecc71";
+                statusElement.style.color = "white";
+
+                // Tự động trả lại trạng thái cũ sau 3 giây
+                setTimeout(() => {
+                    statusElement.innerText = "Camera sẵn sàng! Hãy chỉa vào thẻ của học sinh.";
+                    statusElement.style.backgroundColor = "#333";
+                    statusElement.style.color = "#4CAF50";
+                }, 3000);
             }
         });
 
@@ -334,7 +349,6 @@
             socket.emit('teacher_command', { action: 'reveal', correctAnswer: activeQuestionOnBoard.correct });
         });
 
-        // TÍNH NĂNG MỚI: TÍNH TOÁN VÀ GỬI BẢNG XẾP HẠNG LÊN MÁY CHIẾU
         document.getElementById('btn-leaderboard').addEventListener('click', () => {
             if (questionsAsked.length === 0) {
                 alert("Bạn chưa chấm điểm câu hỏi nào! Không có dữ liệu xếp hạng.");
@@ -352,7 +366,6 @@
                     }
                 });
 
-                // Chỉ hiển thị học sinh có tên thực hoặc đã được gán ID
                 leaderboard.push({
                     id: i,
                     name: studentNamesList[i - 1] || `Học sinh ID: ${i}`,
@@ -360,7 +373,6 @@
                 });
             }
 
-            // Sắp xếp điểm từ cao xuống thấp
             leaderboard.sort((a, b) => b.score - a.score);
 
             socket.emit('teacher_command', {
