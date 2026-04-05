@@ -15,10 +15,10 @@ app.get('/projector', (req, res) => res.sendFile(path.join(__dirname, 'projector
 app.get('/marker', (req, res) => res.sendFile(path.join(__dirname, 'generate_marker.html')));
 app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'dashboard.html')));
 
-// Phân phối âm thanh
-app.get('/chucmung.mp3', (req, res) => res.sendFile(path.join(__dirname, 'chucmung.mp3')));
-app.get('/hetgio.mp3', (req, res) => res.sendFile(path.join(__dirname, 'hetgio.mp3')));
-app.get('/tinh-gio-choi.mp3', (req, res) => res.sendFile(path.join(__dirname, 'tinh-gio-choi.mp3')));
+// Phân phối âm thanh (file nằm trong thư mục public/)
+app.get('/chucmung.mp3', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chucmung.mp3')));
+app.get('/hetgio.mp3', (req, res) => res.sendFile(path.join(__dirname, 'public', 'hetgio.mp3')));
+app.get('/tinh-gio-choi.mp3', (req, res) => res.sendFile(path.join(__dirname, 'public', 'tinh-gio-choi.mp3')));
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
