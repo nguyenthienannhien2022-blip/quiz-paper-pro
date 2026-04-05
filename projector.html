@@ -158,7 +158,6 @@
             font-size: 28px;
         }
 
-        /* [ĐÃ SỬA] Grid học sinh, ban đầu sẽ trắng trơn không có ô vuông nào */
         .student-grid {
             display: flex;
             flex-wrap: wrap;
@@ -169,7 +168,6 @@
             min-height: 100px;
         }
 
-        /* [ĐÃ SỬA] Style thẻ học sinh khi xuất hiện */
         .student-card {
             width: 140px;
             height: 90px;
@@ -185,15 +183,12 @@
             animation: popIn 0.3s ease-out;
             word-wrap: break-word;
             overflow: hidden;
-
-            /* Chỉ có các trạng thái nộp bài/đúng/sai, bỏ trạng thái chờ */
             background-color: #f39c12;
             color: white;
             border: 3px solid #e67e22;
             transform: scale(1.05);
         }
 
-        /* Hiệu ứng xuất hiện */
         @keyframes popIn {
             0% {
                 transform: scale(0);
@@ -206,7 +201,6 @@
             }
         }
 
-        /* [ĐÃ SỬA] Bỏ class 'submitted', class gốc là trạng thái nộp bài luôn */
         .student-card.correct {
             background-color: #2ecc71;
             color: white;
@@ -223,7 +217,6 @@
             animation: none;
         }
 
-        /* GIAO DIỆN BẢNG XẾP HẠNG */
         #leaderboard-board {
             display: none;
             width: 100%;
@@ -342,49 +335,49 @@
         const roomCode = urlParams.get('room') || 'DEMO';
         document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
 
-        // Lấy dữ liệu tên học sinh dự phòng
+        // [QUAN TRỌNG ĐÃ PHỤC HỒI] Lấy dữ liệu từ Laptop
+        const localQuestions = JSON.parse(localStorage.getItem('quiz_questions')) || [];
         const localClass = JSON.parse(localStorage.getItem('quiz_class')) || [];
 
         let studentSubmissions = {};
-        let totalStudents = localClass.length > 0 ? localClass.length : 50;
         let countdownInterval;
 
         // Âm thanh
         const audioTinhGio = new Audio('/tinh-gio-choi.mp3'); audioTinhGio.loop = true;
         const audioHetGio = new Audio('/hetgio.mp3');
         const audioChucMung = new Audio('/chucmung.mp3');
-        const audioTip = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + Array(200).join('A')); // Tiếng típ ảo siêu ngắn
+        const audioTip = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU' + Array(200).join('A'));
 
         function stopAllAudio() { audioTinhGio.pause(); audioTinhGio.currentTime = 0; audioHetGio.pause(); audioHetGio.currentTime = 0; audioChucMung.pause(); audioChucMung.currentTime = 0; }
 
         // Nhấp chuột bật loa
         document.getElementById('audio-wakeup-overlay').addEventListener('click', function () {
             this.style.opacity = '0'; this.style.visibility = 'hidden'; console.log("Hệ thống âm thanh đã sẵn sàng!");
-            audioTip.play().catch(e => { }); // Phát thử 1 tiếng típ
+            audioTip.play().catch(e => { });
         });
 
         // Hàm lấy tên học sinh
         function getStudentLabel(id) {
-            // Nếu có tên trong danh sách lớp gửi từ dashboard
-            if (activeStudentsNames && activeStudentsNames[id - 1]) return activeStudentsNames[id - 1];
-            // Nếu không, lấy từ bộ nhớ Laptop
             if (localClass[id - 1]) return localClass[id - 1];
             return `ID: ${id}`;
         }
 
         const socket = io();
-        let activeStudentsNames = null; // Danh sách tên nhận từ Dashboard
 
         socket.on('connect', () => {
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
             socket.emit('join_room', roomCode);
+            // [QUAN TRỌNG ĐÃ PHỤC HỒI] Vừa bật lên là ném luôn dữ liệu sang điện thoại
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
         });
 
-        socket.on('receive_sync_data', (data) => {
-            if (data.students) activeStudentsNames = data.students;
+        // [QUAN TRỌNG ĐÃ PHỤC HỒI] Khi có điện thoại vừa quét mã vào phòng, bắn dữ liệu sang
+        socket.on('device_joined', () => {
+            console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
         });
 
-        // [ĐÃ SỬA] XỬ LÝ KHI QUÉT THẺ - TỰ ĐỘNG TẠO Ô HỌC SINH MỚI
+        // XỬ LÝ KHI QUÉT THẺ - TỰ ĐỘNG TẠO Ô HỌC SINH MỚI
         socket.on('update_projector', (data) => {
             const studentId = data.studentId;
 
@@ -403,14 +396,19 @@
             // TẠO MỚI VÀ CHÈN Ô HỌC SINH VÀO GRID
             const grid = document.getElementById('student-grid');
             const card = document.createElement('div');
-            card.className = 'student-card'; // Class gốc là trạng thái nộp bài (màu vàng)
+            card.className = 'student-card';
             card.id = `student-${studentId}`;
-            card.innerText = `${getStudentLabel(studentId)}\n✔️`; // Hiện tên và dấu ✔️
+            card.innerText = `${getStudentLabel(studentId)}\n✔️`;
 
-            grid.appendChild(card); // Chèn vào màn hình
+            grid.appendChild(card);
         });
 
         socket.on('execute_command', (data) => {
+
+            // [QUAN TRỌNG ĐÃ PHỤC HỒI] Khi điện thoại bấm nút "Tải dữ liệu"
+            if (data.action === 'request_sync') {
+                socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
+            }
 
             if (data.action !== 'show_leaderboard' && data.action !== 'request_sync') {
                 document.getElementById('leaderboard-board').style.display = 'none';
@@ -439,7 +437,7 @@
                 stopAllAudio(); clearInterval(countdownInterval);
                 document.getElementById('timer-container').style.display = 'none'; document.getElementById('timer-text').style.display = 'none';
 
-                // [ĐÃ SỬA] DỌN SẠCH GRID HỌC SINH VỀ TRẮNG TRƠN
+                // DỌN SẠCH GRID HỌC SINH VỀ TRẮNG TRƠN
                 studentSubmissions = {};
                 document.getElementById('student-grid').innerHTML = '';
 
@@ -453,16 +451,15 @@
             if (data.action === 'reveal') {
                 clearInterval(countdownInterval); stopAllAudio(); audioChucMung.play().catch(e => { });
 
-                // Lật màu đáp án dựa trên danh sách các em đã hiện ra trên màn hình
                 for (const [id, ans] of Object.entries(studentSubmissions)) {
                     const c = document.getElementById(`student-${id}`);
                     if (!c) continue;
                     if (ans === data.correctAnswer) {
-                        c.className = 'student-card correct'; // Đổi sang màu xanh
+                        c.className = 'student-card correct';
                         c.innerText = `${getStudentLabel(id)}\n${ans}`;
                     }
                     else {
-                        c.className = 'student-card incorrect'; // Đổi sang màu đỏ
+                        c.className = 'student-card incorrect';
                         c.innerText = `${getStudentLabel(id)}\n${ans}`;
                     }
                 }
