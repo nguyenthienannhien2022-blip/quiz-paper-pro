@@ -263,7 +263,6 @@
         const roomCode = urlParams.get('room') || 'DEMO';
         document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
 
-        // Lấy dữ liệu từ Laptop
         const localQuestions = JSON.parse(localStorage.getItem('quiz_questions')) || [];
         const localClass = JSON.parse(localStorage.getItem('quiz_class')) || [];
 
@@ -292,14 +291,16 @@
         socket.on('connect', () => {
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
             socket.emit('join_room', roomCode);
+
+            // Ngay khi máy chiếu vừa kết nối xong, nó cũng tự động hét lên 1 tiếng
+            // để ném dữ liệu cho điện thoại (nếu điện thoại đã vào trước)
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
         });
 
-        // KHI ĐIỆN THOẠI QUÉT VÀO PHÒNG -> MÁY CHIẾU LẬP TỨC ĐẨY DỮ LIỆU SANG
+        // Lắng nghe tín hiệu tự động khi điện thoại vào phòng
         socket.on('device_joined', () => {
             console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
-            socket.emit('sync_data_to_phone', {
-                room: roomCode, questions: localQuestions, students: localClass
-            });
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
         });
 
         socket.on('update_projector', (data) => {
@@ -309,7 +310,13 @@
         });
 
         socket.on('execute_command', (data) => {
-            if (data.action !== 'show_leaderboard') {
+
+            // LẮNG NGHE LỆNH YÊU CẦU DỮ LIỆU TỪ NÚT BẤM CỦA ĐIỆN THOẠI
+            if (data.action === 'request_sync') {
+                socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
+            }
+
+            if (data.action !== 'show_leaderboard' && data.action !== 'request_sync') {
                 document.getElementById('leaderboard-board').style.display = 'none';
                 document.getElementById('question-board').style.display = 'flex';
                 document.getElementById('student-grid').style.display = 'flex';
@@ -334,7 +341,6 @@
                 stopAllAudio(); clearInterval(countdownInterval);
                 document.getElementById('timer-container').style.display = 'none'; document.getElementById('timer-text').style.display = 'none';
 
-                // Dọn sạch bảng điểm câu cũ
                 studentSubmissions = {}; renderStudentGrid();
 
                 const q = data.questionData;

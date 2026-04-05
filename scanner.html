@@ -121,6 +121,12 @@
             background-color: #107c41;
         }
 
+        .btn-sync {
+            background-color: #e67e22;
+            border: 2px dashed #f39c12;
+            margin-bottom: 15px;
+        }
+
         .flex-row {
             display: flex;
             gap: 10px;
@@ -145,6 +151,9 @@
 
     <div class="control-panel">
         <h3 id="room-title">🎛️ ĐIỀU KHIỂN</h3>
+
+        <button class="btn btn-sync" id="btn-request-sync">🔄 TẢI DỮ LIỆU TỪ LAPTOP</button>
+
         <select id="question-select">
             <option value="">-- Đang đợi Laptop gửi câu hỏi... --</option>
         </select>
@@ -212,6 +221,14 @@
         window.onload = () => { startCamera(); };
 
         socket.on('connect', () => { socket.emit('join_room', roomCode); });
+
+        // KHI BẤM NÚT "TẢI DỮ LIỆU TỪ LAPTOP"
+        document.getElementById('btn-request-sync').addEventListener('click', () => {
+            statusElement.innerText = "Đang gọi Laptop, vui lòng chờ...";
+            statusElement.style.backgroundColor = "#e67e22"; statusElement.style.color = "white";
+            // Gửi lệnh yêu cầu Laptop bắn dữ liệu sang
+            socket.emit('teacher_command', { room: roomCode, action: 'request_sync' });
+        });
 
         // NHẬN DỮ LIỆU TỪ MÁY CHIẾU (LAPTOP) GỬI SANG
         socket.on('receive_sync_data', (data) => {
