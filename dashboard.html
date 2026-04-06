@@ -140,6 +140,10 @@
         .btn-dark {
             background-color: #34495e;
         }
+        
+        .btn-home {
+            background-color: #7f8c8d;
+        }
 
         .excel-group {
             display: flex;
@@ -233,8 +237,13 @@
             <div style="color:#e67e22; font-weight:bold; font-size: 14px;">Dữ liệu tự động lưu an toàn trên máy tính của
                 bạn (Local Storage)</div>
         </div>
-        <button class="btn btn-purple" style="width: auto; padding: 10px 20px;"
-            onclick="document.getElementById('guideModal').classList.add('active')">💡 Cẩm Nang Toán & Lệnh AI</button>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn btn-home" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
+                onclick="window.location.href='/'">🏠 TRỞ VỀ TRANG CHỦ</button>
+            <button class="btn btn-purple" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
+                onclick="document.getElementById('guideModal').classList.add('active')">💡 Cẩm Nang Toán & Lệnh AI</button>
+        </div>
     </div>
 
     <div class="main-grid">
