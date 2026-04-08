@@ -19,11 +19,27 @@
             margin: 0;
         }
 
+        /* BANNER CẢNH BÁO BẢN FREE */
+        #free-banner {
+            display: none;
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.3);
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header h2 {
@@ -117,33 +133,14 @@
             transform: translateY(-1px);
         }
 
-        .btn-primary {
-            background-color: #3498db;
-        }
-
-        .btn-success {
-            background-color: #2ecc71;
-        }
-
-        .btn-warning {
-            background-color: #f39c12;
-        }
-
-        .btn-excel {
-            background-color: #107c41;
-        }
-
-        .btn-purple {
-            background-color: #9b59b6;
-        }
-
-        .btn-dark {
-            background-color: #34495e;
-        }
-        
-        .btn-home {
-            background-color: #7f8c8d;
-        }
+        .btn-primary { background-color: #3498db; }
+        .btn-success { background-color: #2ecc71; }
+        .btn-warning { background-color: #f39c12; }
+        .btn-excel { background-color: #107c41; }
+        .btn-purple { background-color: #9b59b6; }
+        .btn-dark { background-color: #34495e; }
+        .btn-home { background-color: #7f8c8d; }
+        .btn-cloud { background-color: #e84393; box-shadow: 0 4px 10px rgba(232, 67, 147, 0.3); }
 
         .excel-group {
             display: flex;
@@ -231,16 +228,21 @@
 </head>
 
 <body>
+    <div id="free-banner">🔒 BẢN GIỚI HẠN: Bạn chỉ được tạo tối đa 5 câu hỏi. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa vô hạn!</div>
+
     <div class="header">
         <div>
             <h2>⚙️ STUDIO SOẠN ĐỀ THÔNG MINH</h2>
-            <div style="color:#e67e22; font-weight:bold; font-size: 14px;">Dữ liệu tự động lưu an toàn trên máy tính của
-                bạn (Local Storage)</div>
+            <div style="color:#e67e22; font-weight:bold; font-size: 14px;">Dữ liệu tự động lưu an toàn trên máy tính của bạn</div>
         </div>
         
-        <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button class="btn btn-cloud" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
+                onclick="saveLessonToEcosystem()">☁️ LƯU LÊN HỆ SINH THÁI</button>
+
             <button class="btn btn-home" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
-                onclick="window.location.href='/'">🏠 TRỞ VỀ TRANG CHỦ</button>
+                onclick="goHome()">🏠 TRỞ VỀ TRANG CHỦ</button>
+
             <button class="btn btn-purple" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
                 onclick="document.getElementById('guideModal').classList.add('active')">💡 Cẩm Nang Toán & Lệnh AI</button>
         </div>
@@ -367,13 +369,25 @@
     </div>
 
     <script>
+        // ĐỌC TRẠNG THÁI VIP TỪ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const isVip = urlParams.get('vip') !== 'false';
+        const vipQuery = isVip ? '' : '?vip=false';
+
+        function goHome() {
+            window.location.href = '/' + vipQuery;
+        }
+
         let questionBank = JSON.parse(localStorage.getItem('quiz_questions')) || [];
         let classList = JSON.parse(localStorage.getItem('quiz_class')) || [];
 
         window.onload = () => {
+            if (!isVip) {
+                document.getElementById('free-banner').style.display = 'block';
+            }
             renderQuestionList();
             document.getElementById('class-list').value = classList.join('\n');
-            updatePreview(); // Chạy preview lần đầu
+            updatePreview();
         };
 
         function saveToStorage() {
@@ -387,6 +401,50 @@
             localStorage.setItem('quiz_class', JSON.stringify(classList));
             alert("Đã lưu danh sách lớp vào bộ nhớ máy!");
         }
+
+        // ================= TÍNH NĂNG MỚI: LƯU / NẠP BÀI HỌC VỚI HỆ SINH THÁI MẸ =================
+        function saveLessonToEcosystem() {
+            if (questionBank.length === 0 && classList.length === 0) {
+                return alert("❌ Dữ liệu đang trống! Vui lòng nhập câu hỏi hoặc danh sách lớp trước khi lưu.");
+            }
+
+            saveToStorage();
+            saveClassList();
+
+            if (window.parent !== window) {
+                let defaultTitle = `Quiz Paper - ${new Date().toLocaleDateString('vi-VN')} ${new Date().toLocaleTimeString('vi-VN')}`;
+                let lessonTitle = prompt("Nhập tên bài học để lưu lên Hệ Sinh Thái Giáo Viên Pro:", defaultTitle);
+                
+                if (lessonTitle !== null) {
+                    window.parent.postMessage({
+                        action: 'SAVE_LESSON',
+                        lessonTitle: lessonTitle.trim() || defaultTitle,
+                        lessonData: {
+                            questions: questionBank,
+                            classes: classList
+                        }
+                    }, '*');
+                }
+            } else {
+                alert("Bạn đang mở tab độc lập. Dữ liệu đã được lưu an toàn trên trình duyệt máy tính!");
+            }
+        }
+
+        // Lắng nghe tín hiệu nạp bài học từ Hệ thống Mẹ
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.action === 'LOAD_LESSON') {
+                const data = event.data.lessonData;
+                if (data) {
+                    if (data.questions) questionBank = data.questions;
+                    if (data.classes) {
+                        classList = data.classes;
+                        document.getElementById('class-list').value = classList.join('\n');
+                    }
+                    saveToStorage();
+                    localStorage.setItem('quiz_class', JSON.stringify(classList));
+                }
+            }
+        });
 
         // ================= XEM TRƯỚC THỜI GIAN THỰC (LIVE PREVIEW & KATEX) =================
         const inputIds = ['q-text', 'opt-A', 'opt-B', 'opt-C', 'opt-D'];
@@ -412,7 +470,6 @@
                 </div>
             `;
 
-            // Render Công thức Toán bằng KaTeX
             renderMathInElement(previewEl, {
                 delimiters: [
                     { left: '$$', right: '$$', display: true },
@@ -425,6 +482,12 @@
         // ================= LƯU VÀ SỬA THỦ CÔNG =================
         document.getElementById('btn-save').addEventListener('click', () => {
             const id = document.getElementById('edit-id').value;
+
+            // KIỂM TRA ĐIỀU KIỆN VIP
+            if (!isVip && !id && questionBank.length >= 5) {
+                return alert("🔒 BẢN GIỚI HẠN: Bạn chỉ được tạo tối đa 5 câu hỏi. Hãy nâng cấp PRO để mở khóa vô hạn!");
+            }
+
             const q = {
                 id: id || 'Q' + Date.now(),
                 type: '4opts',
@@ -475,7 +538,6 @@
                 `;
                 listEl.appendChild(li);
             });
-            // Thêm render toán học cho cả danh sách câu hỏi
             renderMathInElement(listEl, { delimiters: [{ left: '$', right: '$', display: false }], throwOnError: false });
         }
 
@@ -508,33 +570,34 @@
 
         // ================= CỖ MÁY BÓC TÁCH TỰ ĐỘNG (AUTO-PARSER) =================
         function autoParseQuestions() {
+            // KIỂM TRA ĐIỀU KIỆN VIP TRƯỚC KHI BÓC TÁCH
+            if (!isVip && questionBank.length >= 5) {
+                return alert("🔒 BẢN GIỚI HẠN: Ngân hàng của bạn đã đầy (Tối đa 5 câu). Hãy nâng cấp PRO để thêm tiếp!");
+            }
+
             const raw = document.getElementById('raw-text').value;
             if (!raw.trim()) return alert("Vui lòng dán nội dung vào ô để bóc tách!");
 
-            // Chia tách các câu dựa trên chữ "Câu X:"
             const blocks = raw.split(/Câu\s*\d+\s*:/i).filter(b => b.trim().length > 0);
             let successCount = 0;
 
             blocks.forEach(block => {
+                // Chặn nếu mốc đã chạm 5
+                if (!isVip && (questionBank.length + successCount) >= 5) return;
+
                 let text = block.trim();
                 let correct = 'A';
 
-                // Tìm Đáp án
                 const ansMatch = text.match(/Đáp án:\s*([A-D])/i);
-                if (ansMatch) {
-                    correct = ansMatch[1].toUpperCase();
-                }
+                if (ansMatch) correct = ansMatch[1].toUpperCase();
 
-                // Tìm các đáp án A, B, C, D
                 const optA = text.match(/A\.(.*?)(?=B\.|C\.|D\.|Đáp án:|$)/is);
                 const optB = text.match(/B\.(.*?)(?=C\.|D\.|Đáp án:|$)/is);
                 const optC = text.match(/C\.(.*?)(?=D\.|Đáp án:|$)/is);
                 const optD = text.match(/D\.(.*?)(?=Đáp án:|$)/is);
-
-                // Nội dung câu hỏi là tất cả phần trước "A."
                 const qTextMatch = text.split(/A\./i)[0];
 
-                if (qTextMatch && optA && optB) { // Điều kiện tối thiểu có nội dung và A, B
+                if (qTextMatch && optA && optB) {
                     questionBank.push({
                         id: 'Q' + Date.now() + Math.random(),
                         type: '4opts',
@@ -554,13 +617,16 @@
             if (successCount > 0) {
                 saveToStorage();
                 document.getElementById('raw-text').value = '';
-                alert(`🎉 Bóc tách thành công ${successCount} câu hỏi và đã đưa vào Ngân hàng!`);
+                if (!isVip && (questionBank.length >= 5)) {
+                    alert(`🎉 Bóc tách thành công ${successCount} câu. Bạn đã chạm giới hạn 5 câu của bản Miễn phí!`);
+                } else {
+                    alert(`🎉 Bóc tách thành công ${successCount} câu hỏi và đã đưa vào Ngân hàng!`);
+                }
             } else {
                 alert("Không nhận diện được câu hỏi nào. Hãy chắc chắn văn bản đúng chuẩn như trong phần Hướng Dẫn.");
             }
         }
 
-        // Copy Prompt
         function copyPrompt() {
             const text = document.getElementById('ai-prompt').innerText;
             navigator.clipboard.writeText(text).then(() => {
@@ -579,6 +645,13 @@
         }
 
         function importQuestionsExcel(e) {
+            // KIỂM TRA ĐIỀU KIỆN VIP TRƯỚC KHI NHẬP FILE
+            if (!isVip && questionBank.length >= 5) {
+                alert("🔒 BẢN GIỚI HẠN: Ngân hàng đã đầy (Tối đa 5 câu). Không thể nhập thêm từ Excel!");
+                e.target.value = "";
+                return;
+            }
+
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function (evt) {
@@ -587,6 +660,9 @@
                 const rows = XLSX.utils.sheet_to_json(sheet);
                 let count = 0;
                 rows.forEach(row => {
+                    // Chặn nếu quá 5 câu cho bản free
+                    if (!isVip && (questionBank.length) >= 5) return;
+
                     if (row["Câu hỏi"]) {
                         questionBank.push({
                             id: 'Q' + Date.now() + Math.random(), type: '4opts', text: row["Câu hỏi"],
@@ -596,7 +672,12 @@
                         count++;
                     }
                 });
-                saveToStorage(); alert(`Đã nhập thành công ${count} câu hỏi từ Excel!`);
+                saveToStorage(); 
+                if (!isVip && questionBank.length >= 5) {
+                    alert(`Đã nhập thành công ${count} câu. Bạn đã chạm mốc giới hạn của bản Miễn phí!`);
+                } else {
+                    alert(`Đã nhập thành công ${count} câu hỏi từ Excel!`);
+                }
                 e.target.value = "";
             };
             reader.readAsBinaryString(file);
