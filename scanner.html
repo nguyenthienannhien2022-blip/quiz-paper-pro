@@ -220,28 +220,67 @@
         let questionBank = []; let activeQuestionOnBoard = null; let studentNamesList = [];
         let currentSubmissions = {}; let sessionResults = {}; let questionsAsked = [];
 
-        window.onload = () => { startCamera(); };
+        // [GIẢI PHÁP MỚI] Hàm đọc dữ liệu trực tiếp từ localStorage (khi chạy cùng máy tính)
+        function tryLoadFromLocalStorage() {
+            try {
+                const savedQ = JSON.parse(localStorage.getItem('quiz_questions'));
+                const savedC = JSON.parse(localStorage.getItem('quiz_class'));
+
+                if (savedQ && savedQ.length > 0) {
+                    questionBank = savedQ;
+                    studentNamesList = savedC || [];
+
+                    const selectEl = document.getElementById('question-select');
+                    selectEl.innerHTML = '<option value="">-- Chọn câu hỏi để bắn lên Tivi --</option>';
+                    questionBank.forEach((q, index) => {
+                        const opt = document.createElement('option'); opt.value = q.id;
+                        opt.innerText = `Câu ${index + 1}: ${q.text.substring(0, 30)}... (Đ/án: ${q.correct})`;
+                        selectEl.appendChild(opt);
+                    });
+
+                    statusElement.innerText = `✅ Đã tải ${studentNamesList.length} Học sinh & ${questionBank.length} Câu hỏi (từ bộ nhớ máy)!`;
+                    statusElement.style.backgroundColor = "#2ecc71"; statusElement.style.color = "white";
+                    setTimeout(() => { statusElement.innerText = "Camera sẵn sàng! Hãy quét thẻ."; statusElement.style.backgroundColor = "#333"; statusElement.style.color = "#4CAF50"; }, 3000);
+                    return true;
+                }
+            } catch (e) { console.log("Không đọc được localStorage (có thể đang ở thiết bị khác):", e); }
+            return false;
+        }
+
+        window.onload = () => {
+            startCamera();
+            // Thử đọc localStorage ngay khi mở trang (hữu ích khi chạy cùng máy tính)
+            tryLoadFromLocalStorage();
+        };
 
         // [MẤU CHỐT TỰ ĐỘNG Ở ĐÂY]
         let syncTimeout = null;
         socket.on('connect', () => {
             socket.emit('join_room', roomCode);
 
-            // Ngay khi kết nối thành công, điện thoại TỰ ĐỘNG phát lệnh gọi dữ liệu ngầm từ Laptop
+            // Ngay khi kết nối thành công, TỰ ĐỘNG phát lệnh gọi dữ liệu ngầm từ Laptop
             socket.emit('teacher_command', { room: roomCode, action: 'request_sync' });
 
-            // Nếu 5 giây không nhận được dữ liệu, cảnh báo người dùng
+            // Nếu 5 giây không nhận được dữ liệu qua socket VÀ localStorage cũng trống, cảnh báo
             clearTimeout(syncTimeout);
             syncTimeout = setTimeout(() => {
                 if (questionBank.length === 0) {
-                    statusElement.innerText = "⚠️ Chưa nhận được dữ liệu! Hãy mở Màn Hình Máy Chiếu trên Laptop trước.";
-                    statusElement.style.backgroundColor = "#e74c3c"; statusElement.style.color = "white";
+                    // Thử lại 1 lần nữa từ localStorage
+                    if (!tryLoadFromLocalStorage()) {
+                        statusElement.innerText = "⚠️ Chưa nhận được dữ liệu! Hãy mở Màn Hình Máy Chiếu trên Laptop trước.";
+                        statusElement.style.backgroundColor = "#e74c3c"; statusElement.style.color = "white";
+                    }
                 }
             }, 5000);
         });
 
         // KHI BẤM NÚT DỰ PHÒNG "TẢI DỮ LIỆU TỪ LAPTOP"
         document.getElementById('btn-request-sync').addEventListener('click', () => {
+            // Thử đọc trực tiếp từ localStorage trước (khi cùng máy tính)
+            if (tryLoadFromLocalStorage()) {
+                return; // Đã tải thành công từ bộ nhớ máy
+            }
+            // Nếu không có trong localStorage, gọi qua socket
             statusElement.innerText = "Đang gọi Laptop, vui lòng chờ...";
             statusElement.style.backgroundColor = "#e67e22"; statusElement.style.color = "white";
             socket.emit('teacher_command', { room: roomCode, action: 'request_sync' });
