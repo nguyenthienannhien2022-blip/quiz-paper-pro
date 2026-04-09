@@ -6,180 +6,732 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio Soạn Đề - Quiz Paper Pro</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f4f6f9;
-            padding: 20px;
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --success: #10b981;
+            --success-dark: #059669;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+            --bg: #f1f5f9;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* BANNER CẢNH BÁO BẢN FREE */
-        #free-banner {
-            display: none;
-            background: #e74c3c;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.3);
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
         }
 
-        .header {
+        /* ============ SCROLLBAR ============ */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+        /* ============ TOP BAR ============ */
+        .top-bar {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed, #a855f7);
+            padding: 20px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
         }
 
-        .header h2 {
-            color: #8e44ad;
-            margin: 0;
-            font-size: 28px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .main-grid {
+        .top-bar .brand {
             display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .top-bar h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .top-bar .subtitle {
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 500;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
-            max-width: 98%;
-            margin: 0 auto;
         }
 
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-
-        .panel h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
-            font-size: 18px;
-        }
-
-        .editor-panel {
-            flex: 1.5;
-            min-width: 350px;
-        }
-
-        .preview-panel {
-            flex: 1;
-            min-width: 350px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #34495e;
-        }
-
-        input[type="text"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #bdc3c7;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 15px;
-            transition: 0.2s;
-        }
-
-        input[type="text"]:focus,
-        textarea:focus {
-            border-color: #3498db;
-            outline: none;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn {
-            padding: 12px 15px;
-            font-weight: bold;
-            font-size: 15px;
+        .top-btn {
+            padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-xs);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            color: white;
-            width: 100%;
-            margin-bottom: 8px;
-            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
-        .btn:hover {
-            opacity: 0.9;
+        .top-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .top-btn.btn-cloud {
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            color: white;
+        }
+
+        .top-btn.btn-ai {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: white;
+        }
+
+        .top-btn.btn-guide {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .top-btn.btn-home {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        /* ============ FREE BANNER ============ */
+        #free-banner {
+            display: none;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            text-align: center;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ============ LAYOUT ============ */
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ============ PANEL ============ */
+        .panel {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .panel:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-header .icon-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .panel-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        .panel-header .badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        /* ============ EDITOR SECTION ============ */
+        .editor-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        @media (max-width: 960px) {
+            .editor-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.6;
+        }
+
+        /* Image controls group */
+        .media-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .media-controls .form-input {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 13px;
+            border-width: 1px;
+        }
+
+        .media-controls .upload-btn {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .media-controls .upload-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .img-preview-thumb {
+            max-height: 50px;
+            border-radius: 6px;
+            margin-top: 6px;
+            border: 1px solid var(--border);
+        }
+
+        /* Option grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-card {
+            background: var(--surface-alt);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s ease;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .option-card .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .option-card:nth-child(1) .option-letter { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .option-card:nth-child(2) .option-letter { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .option-card:nth-child(3) .option-letter { background: linear-gradient(135deg, #10b981, #059669); }
+        .option-card:nth-child(4) .option-letter { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .option-card .form-input {
+            padding: 9px 12px;
+            font-size: 13px;
+            border-width: 1px;
+        }
+
+        .option-card .media-controls .form-input {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+        .option-card .media-controls .upload-btn {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+
+        /* Answer select + buttons row */
+        .editor-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .correct-select-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .correct-select-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .correct-select-group select {
+            padding: 10px 14px;
+            border: 2px solid var(--success);
+            border-radius: var(--radius-xs);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--success-dark);
+            background: #ecfdf5;
+            cursor: pointer;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
             transform: translateY(-1px);
         }
 
-        .btn-primary { background-color: #3498db; }
-        .btn-success { background-color: #2ecc71; }
-        .btn-warning { background-color: #f39c12; }
-        .btn-excel { background-color: #107c41; }
-        .btn-purple { background-color: #9b59b6; }
-        .btn-dark { background-color: #34495e; }
-        .btn-home { background-color: #7f8c8d; }
-        .btn-cloud { background-color: #e84393; box-shadow: 0 4px 10px rgba(232, 67, 147, 0.3); }
-
-        .excel-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
-        #live-preview {
-            background: #e8f4f8;
-            padding: 20px;
+        .btn-save:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        .btn-clear {
+            background: var(--surface-alt);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+            flex: 0.4;
+        }
+
+        .btn-clear:hover {
+            background: var(--border);
+        }
+
+        /* ============ PREVIEW ============ */
+        .preview-area {
+            background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+            border: 2px dashed var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            min-height: 200px;
+        }
+
+        .preview-question {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        .preview-question img {
+            max-width: 100%;
+            max-height: 200px;
             border-radius: 8px;
-            border: 2px dashed #3498db;
-            min-height: 120px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .preview-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .preview-opt {
+            background: white;
+            padding: 12px 14px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .preview-opt img {
+            max-height: 60px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        .preview-opt .opt-badge {
+            font-weight: 700;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .preview-empty {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        /* ============ QUESTION BANK ============ */
+        .bank-toolbar {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: var(--surface-alt);
+        }
+
+        .bank-btn {
+            padding: 9px 16px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .bank-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .bank-btn.excel-export {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .bank-btn.excel-import {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .bank-btn.clear-all {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            margin-left: auto;
         }
 
         .question-list {
             list-style: none;
             padding: 0;
-            max-height: 350px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
         .q-item {
-            background: #fdfdfd;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border-left: 4px solid #3498db;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-light);
+            transition: background 0.15s ease;
+            animation: fadeIn 0.3s ease;
         }
 
-        /* Modal Hướng Dẫn */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .q-item:hover {
+            background: var(--surface-alt);
+        }
+
+        .q-item:last-child {
+            border-bottom: none;
+        }
+
+        .q-item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .q-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .q-text {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .q-text img {
+            max-height: 80px;
+            border-radius: 6px;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .q-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 10px 0 10px 44px;
+        }
+
+        .q-opt {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            background: var(--surface-alt);
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .q-opt img {
+            max-height: 40px;
+            border-radius: 4px;
+        }
+
+        .q-opt.correct {
+            background: #ecfdf5;
+            border-color: var(--success);
+            color: var(--success-dark);
+            font-weight: 600;
+        }
+
+        .q-opt .letter {
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .q-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 44px;
+            margin-top: 8px;
+        }
+
+        .q-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: var(--radius-xs);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .q-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .q-btn.edit {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .q-btn.delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* ============ CLASS LIST ============ */
+        .class-panel .form-textarea {
+            min-height: 100px;
+            font-size: 14px;
+        }
+
+        .class-save-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .class-save-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        }
+
+        /* ============ MODAL ============ */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -196,177 +748,238 @@
 
         .modal-content {
             background: white;
-            padding: 30px;
-            border-radius: 12px;
+            padding: 32px;
+            border-radius: var(--radius);
             max-width: 700px;
             width: 90%;
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
         }
 
         .close-btn {
             position: absolute;
-            top: 15px;
+            top: 16px;
             right: 20px;
-            font-size: 25px;
+            font-size: 24px;
             cursor: pointer;
-            color: #7f8c8d;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--text);
         }
 
         .prompt-box {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 18px;
+            border-radius: var(--radius-sm);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
             white-space: pre-wrap;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            line-height: 1.6;
         }
+
+        /* ============ FOOTER ============ */
+        .page-footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Hidden file input */
+        .hidden-file { display: none; }
     </style>
 </head>
 
 <body>
     <div id="free-banner">🔒 BẢN GIỚI HẠN: Bạn chỉ được tạo tối đa 5 câu hỏi. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa vô hạn!</div>
 
-    <div class="header">
-        <div>
-            <h2>⚙️ STUDIO SOẠN ĐỀ THÔNG MINH</h2>
-            <div style="color:#e67e22; font-weight:bold; font-size: 14px;">Dữ liệu tự động lưu an toàn trên máy tính của bạn</div>
+    <!-- ========== TOP BAR ========== -->
+    <div class="top-bar">
+        <div class="brand">
+            <h1>⚙️ Studio Soạn Đề Thông Minh</h1>
+            <div class="subtitle">Dữ liệu tự động lưu an toàn trên máy tính của bạn</div>
         </div>
-        
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <button class="btn btn-cloud" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
-                onclick="saveLessonToEcosystem()">☁️ LƯU LÊN HỆ SINH THÁI</button>
-
-            <button class="btn btn-home" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
-                onclick="goHome()">🏠 TRỞ VỀ TRANG CHỦ</button>
-
-            <button class="btn btn-purple" style="width: auto; padding: 10px 20px; margin-bottom: 0;"
-                onclick="document.getElementById('guideModal').classList.add('active')">💡 Cẩm Nang Toán & Lệnh AI</button>
+        <div class="top-bar-actions">
+            <button class="top-btn btn-cloud" onclick="saveLessonToEcosystem()">☁️ Lưu lên Hệ Sinh Thái</button>
+            <button class="top-btn btn-ai" onclick="goToAutoParser()">🤖 Bóc Tách & Lệnh AI</button>
+            <button class="top-btn btn-guide" onclick="document.getElementById('guideModal').classList.add('active')">💡 Cẩm Nang</button>
+            <button class="top-btn btn-home" onclick="goHome()">🏠 Trang Chủ</button>
         </div>
     </div>
 
-    <div class="main-grid">
-        <div class="editor-panel">
+    <div class="page-container">
 
-            <div class="panel" style="border: 2px solid #f39c12; background: #fffdf7;">
-                <h3>⚡ Công Cụ Bóc Tách Đề Hàng Loạt (Auto-Parser)</h3>
-                <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 10px;">Dán hàng chục câu hỏi vào đây. Hệ
-                    thống tự động nhận diện Câu hỏi và Đáp án.</div>
-                <textarea id="raw-text" rows="5"
-                    placeholder="Câu 1: Thủ đô của Việt Nam là?&#10;A. Hà Nội&#10;B. Huế&#10;C. Đà Nẵng&#10;D. TP.HCM&#10;Đáp án: A"></textarea>
-                <button class="btn btn-warning" onclick="autoParseQuestions()">🚀 BÓC TÁCH & LƯU VÀO NGÂN HÀNG
-                    NGAY</button>
+        <!-- ========== 1. SOẠN THẢO CÂU HỎI + XEM TRƯỚC ========== -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="icon-badge" style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); color: var(--primary);">📝</div>
+                <h2>Soạn Thảo / Chỉnh Sửa Câu Hỏi</h2>
             </div>
 
-            <div class="panel">
-                <h3>📝 Soạn Thảo / Chỉnh Sửa Từng Câu</h3>
-                <input type="hidden" id="edit-id">
+            <div class="panel-body">
+                <div class="editor-section">
+                    <!-- LEFT: FORM -->
+                    <div class="editor-form">
+                        <input type="hidden" id="edit-id">
 
-                <div class="form-group" style="display: flex; gap: 15px;">
-                    <div style="flex:1">
-                        <label>Đ/Án Đúng:</label>
-                        <select id="q-correct">
-                            <option value="A">ĐÁP ÁN A</option>
-                            <option value="B">ĐÁP ÁN B</option>
-                            <option value="C">ĐÁP ÁN C</option>
-                            <option value="D">ĐÁP ÁN D</option>
-                        </select>
+                        <!-- Câu hỏi -->
+                        <div class="form-group">
+                            <label class="form-label">📖 Nội dung câu hỏi <span style="font-weight:400; text-transform:none; font-size:12px; color:var(--text-muted);">(Toán học kẹp trong $...$)</span></label>
+                            <textarea id="q-text" class="form-textarea" rows="3" placeholder="Nhập nội dung câu hỏi..."></textarea>
+                            <div class="media-controls">
+                                <input type="text" id="q-img-url" class="form-input" placeholder="🔗 Dán link ảnh minh họa...">
+                                <button class="upload-btn" onclick="document.getElementById('q-img-file').click()">📷 Tải ảnh</button>
+                                <input type="file" id="q-img-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'q-img-url')">
+                            </div>
+                            <img id="q-img-preview" class="img-preview-thumb" style="display:none;">
+                        </div>
+
+                        <!-- Phương án -->
+                        <div class="form-group">
+                            <label class="form-label">📋 Các phương án trả lời</label>
+                            <div class="options-grid">
+                                <!-- A -->
+                                <div class="option-card">
+                                    <span class="option-letter">A</span>
+                                    <input type="text" id="opt-A" class="form-input live-input" placeholder="Phương án A">
+                                    <div class="media-controls">
+                                        <input type="text" id="opt-A-img" class="form-input" placeholder="🔗 Link ảnh A">
+                                        <button class="upload-btn" onclick="document.getElementById('opt-A-file').click()">📷</button>
+                                        <input type="file" id="opt-A-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-A-img')">
+                                    </div>
+                                </div>
+                                <!-- B -->
+                                <div class="option-card">
+                                    <span class="option-letter">B</span>
+                                    <input type="text" id="opt-B" class="form-input live-input" placeholder="Phương án B">
+                                    <div class="media-controls">
+                                        <input type="text" id="opt-B-img" class="form-input" placeholder="🔗 Link ảnh B">
+                                        <button class="upload-btn" onclick="document.getElementById('opt-B-file').click()">📷</button>
+                                        <input type="file" id="opt-B-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-B-img')">
+                                    </div>
+                                </div>
+                                <!-- C -->
+                                <div class="option-card">
+                                    <span class="option-letter">C</span>
+                                    <input type="text" id="opt-C" class="form-input live-input" placeholder="Phương án C">
+                                    <div class="media-controls">
+                                        <input type="text" id="opt-C-img" class="form-input" placeholder="🔗 Link ảnh C">
+                                        <button class="upload-btn" onclick="document.getElementById('opt-C-file').click()">📷</button>
+                                        <input type="file" id="opt-C-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-C-img')">
+                                    </div>
+                                </div>
+                                <!-- D -->
+                                <div class="option-card">
+                                    <span class="option-letter">D</span>
+                                    <input type="text" id="opt-D" class="form-input live-input" placeholder="Phương án D">
+                                    <div class="media-controls">
+                                        <input type="text" id="opt-D-img" class="form-input" placeholder="🔗 Link ảnh D">
+                                        <button class="upload-btn" onclick="document.getElementById('opt-D-file').click()">📷</button>
+                                        <input type="file" id="opt-D-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-D-img')">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="editor-actions">
+                            <div class="correct-select-group">
+                                <label>✅ Đáp án đúng:</label>
+                                <select id="q-correct" class="form-select" style="width:auto;">
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                            <button class="btn-action btn-save" id="btn-save">💾 Lưu câu hỏi</button>
+                            <button class="btn-action btn-clear" id="btn-clear">✕ Hủy</button>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: PREVIEW -->
+                    <div class="preview-side">
+                        <label class="form-label" style="margin-bottom: 12px;">👁️ XEM TRƯỚC THỜI GIAN THỰC</label>
+                        <div class="preview-area" id="live-preview">
+                            <div class="preview-empty">Gõ nội dung bên trái để xem trước tại đây...</div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Nội dung câu hỏi (Toán học kẹp trong $...$):</label>
-                    <textarea id="q-text" rows="3"></textarea>
-                </div>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div><label>A:</label><input type="text" id="opt-A" class="live-input"></div>
-                    <div><label>B:</label><input type="text" id="opt-B" class="live-input"></div>
-                    <div><label>C:</label><input type="text" id="opt-C" class="live-input"></div>
-                    <div><label>D:</label><input type="text" id="opt-D" class="live-input"></div>
-                </div>
-
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-primary" id="btn-save">💾 LƯU CÂU NÀY</button>
-                    <button class="btn btn-dark" id="btn-clear" style="width: 30%;">HỦY / LÀM MỚI</button>
-                </div>
             </div>
         </div>
 
-        <div class="preview-panel">
-
-            <div class="panel">
-                <h3>👁️ Xem Trước Thực Tế (Hỗ trợ Toán học)</h3>
-                <div id="live-preview">
-                    <div style="color: #7f8c8d; text-align: center; margin-top: 30px;">Gõ nội dung bên trái để xem trước
-                        tại đây...</div>
-                </div>
+        <!-- ========== 2. NGÂN HÀNG CÂU HỎI ========== -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="icon-badge" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e;">📚</div>
+                <h2>Ngân Hàng Câu Hỏi</h2>
+                <span class="badge" id="q-count-badge"><span id="q-count">0</span> câu</span>
             </div>
-
-            <div class="panel">
-                <h3>📚 Ngân Hàng Câu Hỏi (<span id="q-count">0</span> câu)</h3>
-                <ul class="question-list" id="q-list"></ul>
-                <div class="excel-group">
-                    <button class="btn btn-excel" onclick="exportQuestionsExcel()">📥 Xuất File Excel</button>
-                    <input type="file" id="import-q-file" style="display:none" accept=".xlsx, .xls"
-                        onchange="importQuestionsExcel(event)">
-                    <button class="btn btn-warning" onclick="document.getElementById('import-q-file').click()">📂 Nhập
-                        File Excel</button>
-                </div>
-                <button class="btn btn-danger" style="background-color: #e74c3c; margin-top: 10px;"
-                    onclick="clearAllQuestions()">🗑️ XÓA SẠCH NGÂN HÀNG</button>
+            <div class="bank-toolbar">
+                <button class="bank-btn excel-export" onclick="exportQuestionsExcel()">📥 Xuất Excel</button>
+                <input type="file" id="import-q-file" class="hidden-file" accept=".xlsx, .xls" onchange="importQuestionsExcel(event)">
+                <button class="bank-btn excel-import" onclick="document.getElementById('import-q-file').click()">📂 Nhập Excel</button>
+                <button class="bank-btn clear-all" onclick="clearAllQuestions()">🗑️ Xóa sạch</button>
             </div>
+            <ul class="question-list" id="q-list"></ul>
+        </div>
 
-            <div class="panel">
-                <h3>🧑‍🎓 Danh sách Lớp Học</h3>
-                <textarea id="class-list" rows="4" placeholder="Nguyễn Văn A&#10;Trần Thị B..."></textarea>
-                <button class="btn btn-success" onclick="saveClassList()">💾 LƯU DANH SÁCH LỚP</button>
+        <!-- ========== 3. DANH SÁCH LỚP HỌC ========== -->
+        <div class="panel class-panel">
+            <div class="panel-header">
+                <div class="icon-badge" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46;">🧑‍🎓</div>
+                <h2>Danh Sách Lớp Học</h2>
+            </div>
+            <div class="panel-body">
+                <textarea id="class-list" class="form-textarea" rows="5" placeholder="Nguyễn Văn A&#10;Trần Thị B&#10;..."></textarea>
+                <button class="class-save-btn" onclick="saveClassList()">💾 Lưu Danh Sách Lớp</button>
             </div>
         </div>
     </div>
 
+    <!-- ========== MODAL HƯỚNG DẪN ========== -->
     <div id="guideModal" class="modal-overlay">
         <div class="modal-content">
-            <span class="close-btn"
-                onclick="document.getElementById('guideModal').classList.remove('active')">&times;</span>
-            <h2 style="color: #8e44ad; margin-top: 0;">💡 Cẩm Nang Toán Học & AI</h2>
+            <span class="close-btn" onclick="document.getElementById('guideModal').classList.remove('active')">&times;</span>
+            <h2 style="color: var(--primary-dark); margin-top: 0; font-size: 22px;">💡 Cẩm Nang Toán Học & AI</h2>
 
-            <h3 style="color: #2980b9;">1. Hướng dẫn gõ công thức Toán học</h3>
-            <p>Ứng dụng sử dụng chuẩn <b>LaTeX</b>. Để công thức hiển thị đẹp mắt trên Tivi, hãy làm theo quy tắc sau:
-            </p>
-            <ul>
-                <li><b>Công thức nằm cùng dòng chữ:</b> Kẹp giữa 2 dấu <code>$</code>. Ví dụ:
-                    <code>Giải phương trình $x^2 - 4 = 0$</code>.</li>
-                <li><b>Công thức đứng độc lập giữa màn hình to:</b> Kẹp giữa 2 dấu <code>$$</code>. Ví dụ:
-                    <code>$$\int_{0}^{1} x^2 dx$$</code>.</li>
+            <h3 style="color: #2563eb; margin-top: 20px;">1. Hướng dẫn gõ công thức Toán học</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7;">Ứng dụng sử dụng chuẩn <b>LaTeX</b>. Để công thức hiển thị đẹp mắt trên Tivi, hãy làm theo quy tắc sau:</p>
+            <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: 20px;">
+                <li><b>Công thức nằm cùng dòng chữ:</b> Kẹp giữa 2 dấu <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$</code>. Ví dụ: <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">Giải phương trình $x^2 - 4 = 0$</code>.</li>
+                <li><b>Công thức đứng độc lập giữa màn hình to:</b> Kẹp giữa 2 dấu <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$$</code>. Ví dụ: <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$$\int_{0}^{1} x^2 dx$$</code>.</li>
             </ul>
 
-            <h3 style="color: #d35400;">2. Câu lệnh (Prompt) chuẩn hóa Đề Word bằng AI</h3>
-            <p>Nếu bạn có 1 file Word lộn xộn, hãy copy đoạn chữ dưới đây ném vào <b>ChatGPT</b> hoặc <b>Gemini</b> kèm
-                theo đề của bạn. Nó sẽ dọn dẹp sạch sẽ để bạn paste vào ô <i>Bóc Tách Tự Động</i>.</p>
+            <h3 style="color: #d97706; margin-top: 20px;">2. Câu lệnh (Prompt) chuẩn hóa Đề Word bằng AI</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7;">Nếu bạn có 1 file Word lộn xộn, hãy copy đoạn chữ dưới đây ném vào <b>ChatGPT</b> hoặc <b>Gemini</b> kèm theo đề của bạn. Nó sẽ dọn dẹp sạch sẽ để bạn paste vào ô <i>Bóc Tách Tự Động</i>.</p>
 
-            <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau
-                của tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
-                Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
+            <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau của tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
+Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
 
-                Câu [Số thứ tự]: [Nội dung câu hỏi]
-                A. [Đáp án A]
-                B. [Đáp án B]
-                C. [Đáp án C]
-                D. [Đáp án D]
-                Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
+Câu [Số thứ tự]: [Nội dung câu hỏi]
+A. [Đáp án A]
+B. [Đáp án B]
+C. [Đáp án C]
+D. [Đáp án D]
+Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
 
-                Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu
-                $. Ví dụ: $x^2 + y^2$.
+Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu $. Ví dụ: $x^2 + y^2$.
 
-                Dưới đây là đề thi của tôi:
-                [Dán đề thi Word của bạn vào đây]</div>
-            <button class="btn btn-success" onclick="copyPrompt()">📋 COPY LỆNH NÀY</button>
+Dưới đây là đề thi của tôi:
+[Dán đề thi Word của bạn vào đây]</div>
+            <button class="bank-btn excel-export" style="width:100%; justify-content:center; padding: 12px;" onclick="copyPrompt()">📋 Copy Lệnh Này</button>
         </div>
     </div>
+
+    <!-- Hidden file inputs for image uploads -->
+    <input type="file" id="q-img-file-hidden" class="hidden-file" accept="image/*">
 
     <script>
         // ĐỌC TRẠNG THÁI VIP TỪ URL
@@ -376,6 +989,10 @@
 
         function goHome() {
             window.location.href = '/' + vipQuery;
+        }
+
+        function goToAutoParser() {
+            window.location.href = 'auto_parser.html' + vipQuery;
         }
 
         let questionBank = JSON.parse(localStorage.getItem('quiz_questions')) || [];
@@ -414,7 +1031,7 @@
             if (window.parent !== window) {
                 let defaultTitle = `Quiz Paper - ${new Date().toLocaleDateString('vi-VN')} ${new Date().toLocaleTimeString('vi-VN')}`;
                 let lessonTitle = prompt("Nhập tên bài học để lưu lên Hệ Sinh Thái Giáo Viên Pro:", defaultTitle);
-                
+
                 if (lessonTitle !== null) {
                     window.parent.postMessage({
                         action: 'SAVE_LESSON',
@@ -446,6 +1063,25 @@
             }
         });
 
+        // ================= XỬ LÝ UPLOAD ẢNH =================
+        function handleImageUpload(event, targetInputId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById(targetInputId).value = e.target.result;
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        // Listen for image URL changes to update preview
+        ['q-img-url', 'opt-A-img', 'opt-B-img', 'opt-C-img', 'opt-D-img'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+
         // ================= XEM TRƯỚC THỜI GIAN THỰC (LIVE PREVIEW & KATEX) =================
         const inputIds = ['q-text', 'opt-A', 'opt-B', 'opt-C', 'opt-D'];
         inputIds.forEach(id => {
@@ -454,19 +1090,34 @@
 
         function updatePreview() {
             const previewEl = document.getElementById('live-preview');
-            const qText = document.getElementById('q-text').value || '<em>Chưa nhập nội dung câu hỏi...</em>';
+            const qText = document.getElementById('q-text').value;
+            const qImg = document.getElementById('q-img-url').value;
             const optA = document.getElementById('opt-A').value || '...';
             const optB = document.getElementById('opt-B').value || '...';
             const optC = document.getElementById('opt-C').value || '...';
             const optD = document.getElementById('opt-D').value || '...';
+            const optAImg = document.getElementById('opt-A-img').value;
+            const optBImg = document.getElementById('opt-B-img').value;
+            const optCImg = document.getElementById('opt-C-img').value;
+            const optDImg = document.getElementById('opt-D-img').value;
+
+            if (!qText && !optA.replace('...','') && !optB.replace('...','')) {
+                previewEl.innerHTML = '<div class="preview-empty">Gõ nội dung bên trái để xem trước tại đây...</div>';
+                return;
+            }
+
+            const imgTag = (src) => src ? `<img src="${src}" onerror="this.style.display='none'" style="max-height:60px; border-radius:4px; margin-top:4px; display:block;">` : '';
 
             previewEl.innerHTML = `
-                <div style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">${qText}</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #bdc3c7;"><b>A.</b> ${optA}</div>
-                    <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #bdc3c7;"><b>B.</b> ${optB}</div>
-                    <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #bdc3c7;"><b>C.</b> ${optC}</div>
-                    <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #bdc3c7;"><b>D.</b> ${optD}</div>
+                <div class="preview-question">
+                    ${qText || '<em style="color:var(--text-muted)">Chưa nhập nội dung câu hỏi...</em>'}
+                    ${qImg ? `<img src="${qImg}" onerror="this.style.display='none'">` : ''}
+                </div>
+                <div class="preview-options">
+                    <div class="preview-opt"><span class="opt-badge">A.</span><div>${optA}${imgTag(optAImg)}</div></div>
+                    <div class="preview-opt"><span class="opt-badge">B.</span><div>${optB}${imgTag(optBImg)}</div></div>
+                    <div class="preview-opt"><span class="opt-badge">C.</span><div>${optC}${imgTag(optCImg)}</div></div>
+                    <div class="preview-opt"><span class="opt-badge">D.</span><div>${optD}${imgTag(optDImg)}</div></div>
                 </div>
             `;
 
@@ -492,11 +1143,18 @@
                 id: id || 'Q' + Date.now(),
                 type: '4opts',
                 text: document.getElementById('q-text').value.trim(),
+                image: document.getElementById('q-img-url').value.trim(),
                 options: {
                     A: document.getElementById('opt-A').value.trim(),
                     B: document.getElementById('opt-B').value.trim(),
                     C: document.getElementById('opt-C').value.trim(),
                     D: document.getElementById('opt-D').value.trim()
+                },
+                optionImages: {
+                    A: document.getElementById('opt-A-img').value.trim(),
+                    B: document.getElementById('opt-B-img').value.trim(),
+                    C: document.getElementById('opt-C-img').value.trim(),
+                    D: document.getElementById('opt-D-img').value.trim()
                 },
                 correct: document.getElementById('q-correct').value
             };
@@ -514,11 +1172,16 @@
         document.getElementById('btn-clear').addEventListener('click', () => {
             document.getElementById('edit-id').value = '';
             document.getElementById('q-text').value = '';
+            document.getElementById('q-img-url').value = '';
             document.getElementById('opt-A').value = '';
             document.getElementById('opt-B').value = '';
             document.getElementById('opt-C').value = '';
             document.getElementById('opt-D').value = '';
-            document.getElementById('btn-save').innerText = '💾 LƯU CÂU NÀY';
+            document.getElementById('opt-A-img').value = '';
+            document.getElementById('opt-B-img').value = '';
+            document.getElementById('opt-C-img').value = '';
+            document.getElementById('opt-D-img').value = '';
+            document.getElementById('btn-save').innerText = '💾 Lưu câu hỏi';
             updatePreview();
         });
 
@@ -526,14 +1189,30 @@
             const listEl = document.getElementById('q-list'); listEl.innerHTML = '';
             document.getElementById('q-count').innerText = questionBank.length;
 
+            if (questionBank.length === 0) {
+                listEl.innerHTML = '<li style="padding: 40px; text-align: center; color: var(--text-muted); font-style: italic;">Chưa có câu hỏi nào. Hãy soạn câu hỏi đầu tiên! 🎯</li>';
+                return;
+            }
+
             questionBank.forEach((q, index) => {
                 const li = document.createElement('li'); li.className = 'q-item';
+                const correct = q.correct || 'A';
+                const imgTag = (src) => src ? `<img src="${src}" onerror="this.style.display='none'">` : '';
+
                 li.innerHTML = `
-                    <div style="font-weight: bold; color: #2980b9;">Câu ${index + 1}: ${q.text.substring(0, 40)}${q.text.length > 40 ? '...' : ''}</div>
-                    <div style="font-size: 13px; color: #7f8c8d; margin-top: 5px;">Đáp án đúng: <b style="color:#e74c3c;">${q.correct}</b></div>
-                    <div style="margin-top: 8px;">
-                        <button onclick="editQ('${q.id}')" style="background:#f39c12; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:12px;">Sửa</button>
-                        <button onclick="deleteQ('${q.id}')" style="background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:12px; margin-left:5px;">Xóa</button>
+                    <div class="q-item-header">
+                        <span class="q-number">${index + 1}</span>
+                        <div class="q-text">${q.text}${q.image ? `<img src="${q.image}" onerror="this.style.display='none'">` : ''}</div>
+                    </div>
+                    <div class="q-options-grid">
+                        <div class="q-opt ${correct === 'A' ? 'correct' : ''}"><span class="letter">A.</span><div>${q.options.A}${imgTag(q.optionImages?.A)}</div></div>
+                        <div class="q-opt ${correct === 'B' ? 'correct' : ''}"><span class="letter">B.</span><div>${q.options.B}${imgTag(q.optionImages?.B)}</div></div>
+                        <div class="q-opt ${correct === 'C' ? 'correct' : ''}"><span class="letter">C.</span><div>${q.options.C}${imgTag(q.optionImages?.C)}</div></div>
+                        <div class="q-opt ${correct === 'D' ? 'correct' : ''}"><span class="letter">D.</span><div>${q.options.D}${imgTag(q.optionImages?.D)}</div></div>
+                    </div>
+                    <div class="q-item-actions">
+                        <button class="q-btn edit" onclick="editQ('${q.id}')">✏️ Sửa</button>
+                        <button class="q-btn delete" onclick="deleteQ('${q.id}')">🗑️ Xóa</button>
                     </div>
                 `;
                 listEl.appendChild(li);
@@ -545,13 +1224,20 @@
             const q = questionBank.find(x => x.id === id); if (!q) return;
             document.getElementById('edit-id').value = q.id;
             document.getElementById('q-text').value = q.text;
+            document.getElementById('q-img-url').value = q.image || '';
             document.getElementById('opt-A').value = q.options.A;
             document.getElementById('opt-B').value = q.options.B;
             document.getElementById('opt-C').value = q.options.C;
             document.getElementById('opt-D').value = q.options.D;
+            document.getElementById('opt-A-img').value = q.optionImages?.A || '';
+            document.getElementById('opt-B-img').value = q.optionImages?.B || '';
+            document.getElementById('opt-C-img').value = q.optionImages?.C || '';
+            document.getElementById('opt-D-img').value = q.optionImages?.D || '';
             document.getElementById('q-correct').value = q.correct;
-            document.getElementById('btn-save').innerText = '💾 CẬP NHẬT CÂU NÀY';
+            document.getElementById('btn-save').innerText = '💾 Cập Nhật Câu Này';
             updatePreview();
+            // Scroll to editor
+            document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function deleteQ(id) {
@@ -602,12 +1288,14 @@
                         id: 'Q' + Date.now() + Math.random(),
                         type: '4opts',
                         text: qTextMatch.trim(),
+                        image: '',
                         options: {
                             A: optA[1].trim(),
                             B: optB[1].trim(),
                             C: optC ? optC[1].trim() : '',
                             D: optD ? optD[1].trim() : ''
                         },
+                        optionImages: { A: '', B: '', C: '', D: '' },
                         correct: correct
                     });
                     successCount++;
@@ -637,9 +1325,9 @@
         // ================= XUẤT NHẬP EXCEL CÂU HỎI =================
         function exportQuestionsExcel() {
             const data = questionBank.map((q, i) => ({
-                "STT": i + 1, "Câu hỏi": q.text, "Đáp án A": q.options.A, "Đáp án B": q.options.B, "Đáp án C": q.options.C, "Đáp án D": q.options.D, "Đúng (A/B/C/D)": q.correct
+                "STT": i + 1, "Câu hỏi": q.text, "Ảnh câu hỏi": q.image || '', "Đáp án A": q.options.A, "Ảnh A": q.optionImages?.A || '', "Đáp án B": q.options.B, "Ảnh B": q.optionImages?.B || '', "Đáp án C": q.options.C, "Ảnh C": q.optionImages?.C || '', "Đáp án D": q.options.D, "Ảnh D": q.optionImages?.D || '', "Đúng (A/B/C/D)": q.correct
             }));
-            const ws = XLSX.utils.json_to_sheet(data.length ? data : [{ "STT": 1, "Câu hỏi": "Mẫu câu hỏi", "Đáp án A": "A", "Đáp án B": "B", "Đáp án C": "C", "Đáp án D": "D", "Đúng (A/B/C/D)": "A" }]);
+            const ws = XLSX.utils.json_to_sheet(data.length ? data : [{ "STT": 1, "Câu hỏi": "Mẫu câu hỏi", "Ảnh câu hỏi": "", "Đáp án A": "A", "Ảnh A": "", "Đáp án B": "B", "Ảnh B": "", "Đáp án C": "C", "Ảnh C": "", "Đáp án D": "D", "Ảnh D": "", "Đúng (A/B/C/D)": "A" }]);
             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "CauHoi");
             XLSX.writeFile(wb, "NganHangCauHoi.xlsx");
         }
@@ -666,13 +1354,15 @@
                     if (row["Câu hỏi"]) {
                         questionBank.push({
                             id: 'Q' + Date.now() + Math.random(), type: '4opts', text: row["Câu hỏi"],
+                            image: row["Ảnh câu hỏi"] || '',
                             options: { A: row["Đáp án A"] || '', B: row["Đáp án B"] || '', C: row["Đáp án C"] || '', D: row["Đáp án D"] || '' },
+                            optionImages: { A: row["Ảnh A"] || '', B: row["Ảnh B"] || '', C: row["Ảnh C"] || '', D: row["Ảnh D"] || '' },
                             correct: row["Đúng (A/B/C/D)"]?.toUpperCase() || 'A'
                         });
                         count++;
                     }
                 });
-                saveToStorage(); 
+                saveToStorage();
                 if (!isVip && questionBank.length >= 5) {
                     alert(`Đã nhập thành công ${count} câu. Bạn đã chạm mốc giới hạn của bản Miễn phí!`);
                 } else {
