@@ -15,7 +15,10 @@ app.get('/projector', (req, res) => res.sendFile(path.join(__dirname, 'projector
 app.get('/marker', (req, res) => res.sendFile(path.join(__dirname, 'generate_marker.html')));
 app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'dashboard.html')));
 
-// [ĐÃ SỬA] Bỏ chữ 'public', trỏ thẳng ra ngoài gốc để khớp với GitHub của bạn
+// [ĐÃ BỔ SUNG] Phân phối trang Bóc tách & AI
+app.get('/auto_parser.html', (req, res) => res.sendFile(path.join(__dirname, 'auto_parser.html')));
+
+// Phân phối âm thanh
 app.get('/chucmung.mp3', (req, res) => res.sendFile(path.join(__dirname, 'chucmung.mp3')));
 app.get('/hetgio.mp3', (req, res) => res.sendFile(path.join(__dirname, 'hetgio.mp3')));
 app.get('/tinh-gio-choi.mp3', (req, res) => res.sendFile(path.join(__dirname, 'tinh-gio-choi.mp3')));
