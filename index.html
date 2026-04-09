@@ -229,7 +229,7 @@
         function updateRoom() {
             let room = document.getElementById('room-code').value.trim().toUpperCase();
             if (!room) room = "DEMO";
-            const scannerUrl = window.location.origin + '/scanner?room=' + encodeURIComponent(room) + '&t=' + Date.now();
+            const scannerUrl = window.location.origin + '/scanner?room=' + encodeURIComponent(room);
             document.getElementById('qr-code-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(scannerUrl);
         }
 
