@@ -93,9 +93,17 @@
             opacity: 0.9;
         }
 
-        .btn-warning { background-color: #f39c12; }
-        .btn-success { background-color: #2ecc71; }
-        .btn-home { background-color: #7f8c8d; }
+        .btn-warning {
+            background-color: #f39c12;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-home {
+            background-color: #7f8c8d;
+        }
 
         .prompt-box {
             background: #2c3e50;
@@ -111,7 +119,8 @@
 </head>
 
 <body>
-    <div id="free-banner">🔒 BẢN GIỚI HẠN: Ngân hàng của bạn đã đầy. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa vô hạn!</div>
+    <div id="free-banner">🔒 BẢN GIỚI HẠN: Ngân hàng của bạn đã đầy. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa vô hạn!
+    </div>
 
     <div class="header">
         <div>
@@ -128,7 +137,8 @@
             thống tự động nhận diện Câu hỏi và Đáp án.</div>
         <textarea id="raw-text" rows="10"
             placeholder="Câu 1: Thủ đô của Việt Nam là?&#10;A. Hà Nội&#10;B. Huế&#10;C. Đà Nẵng&#10;D. TP.HCM&#10;Đáp án: A"></textarea>
-        <button class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="autoParseQuestions()">🚀 BÓC TÁCH & LƯU VÀO NGÂN HÀNG NGAY</button>
+        <button class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="autoParseQuestions()">🚀 BÓC
+            TÁCH & LƯU VÀO NGÂN HÀNG NGAY</button>
     </div>
 
     <div class="panel">
@@ -136,21 +146,23 @@
         <p>Nếu bạn có 1 file Word lộn xộn, hãy copy đoạn chữ dưới đây ném vào <b>ChatGPT</b> hoặc <b>Gemini</b> kèm
             theo đề của bạn. Nó sẽ dọn dẹp sạch sẽ để bạn paste vào ô <i>Bóc Tách Tự Động</i> phía trên.</p>
 
-        <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau của tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
-Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
+        <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau của
+            tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
+            Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
 
-Câu [Số thứ tự]: [Nội dung câu hỏi]
-A. [Đáp án A]
-B. [Đáp án B]
-C. [Đáp án C]
-D. [Đáp án D]
-Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
+            Câu [Số thứ tự]: [Nội dung câu hỏi]
+            A. [Đáp án A]
+            B. [Đáp án B]
+            C. [Đáp án C]
+            D. [Đáp án D]
+            Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
 
-Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu $. Ví dụ: $x^2 + y^2$.
-không được đưa phần trích nguồn vào đề nữa
+            Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu $.
+            Ví dụ: $x^2 + y^2$.
+            không được đưa thêm phần trích nguồn vào nữa
 
-Dưới đây là đề thi của tôi:
-[Dán đề thi Word của bạn vào đây]</div>
+            Dưới đây là đề thi của tôi:
+            [Dán đề thi Word của bạn vào đây]</div>
         <button class="btn btn-success" onclick="copyPrompt()">📋 COPY LỆNH NÀY</button>
     </div>
 
@@ -238,4 +250,5 @@ Dưới đây là đề thi của tôi:
         }
     </script>
 </body>
+
 </html>
