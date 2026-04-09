@@ -15,8 +15,11 @@ app.get('/projector', (req, res) => res.sendFile(path.join(__dirname, 'projector
 app.get('/marker', (req, res) => res.sendFile(path.join(__dirname, 'generate_marker.html')));
 app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'dashboard.html')));
 
-// [ĐÃ BỔ SUNG] Phân phối trang Bóc tách & AI
+// Phân phối trang Bóc tách & AI (hỗ trợ nhiều dạng URL)
+app.get('/auto-parser', (req, res) => res.sendFile(path.join(__dirname, 'auto_parser.html')));
+app.get('/auto_parser', (req, res) => res.sendFile(path.join(__dirname, 'auto_parser.html')));
 app.get('/auto_parser.html', (req, res) => res.sendFile(path.join(__dirname, 'auto_parser.html')));
+app.get('/dashboard.html', (req, res) => res.sendFile(path.join(__dirname, 'dashboard.html')));
 
 // Phân phối âm thanh
 app.get('/chucmung.mp3', (req, res) => res.sendFile(path.join(__dirname, 'chucmung.mp3')));

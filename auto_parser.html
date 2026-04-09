@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Parser & AI Prompt - Quiz Paper Pro</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #free-banner {
+            display: none;
+            background: #e74c3c;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h2 {
+            color: #8e44ad;
+            margin: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+        }
+
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+            font-size: 18px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn {
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-warning { background-color: #f39c12; }
+        .btn-success { background-color: #2ecc71; }
+        .btn-home { background-color: #7f8c8d; }
+
+        .prompt-box {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="free-banner">🔒 BẢN GIỚI HẠN: Ngân hàng của bạn đã đầy. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa vô hạn!</div>
+
+    <div class="header">
+        <div>
+            <h2>🤖 BÓC TÁCH ĐỀ & CÂU LỆNH AI</h2>
+        </div>
+        <div>
+            <button class="btn btn-home" onclick="goBack()">🔙 Quay lại Studio</button>
+        </div>
+    </div>
+
+    <div class="panel" style="border: 2px solid #f39c12; background: #fffdf7;">
+        <h3>⚡ Công Cụ Bóc Tách Đề Hàng Loạt (Auto-Parser)</h3>
+        <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 10px;">Dán hàng chục câu hỏi vào đây. Hệ
+            thống tự động nhận diện Câu hỏi và Đáp án.</div>
+        <textarea id="raw-text" rows="10"
+            placeholder="Câu 1: Thủ đô của Việt Nam là?&#10;A. Hà Nội&#10;B. Huế&#10;C. Đà Nẵng&#10;D. TP.HCM&#10;Đáp án: A"></textarea>
+        <button class="btn btn-warning" style="width: 100%; margin-top: 10px;" onclick="autoParseQuestions()">🚀 BÓC TÁCH & LƯU VÀO NGÂN HÀNG NGAY</button>
+    </div>
+
+    <div class="panel">
+        <h3 style="color: #d35400;">💡 Câu lệnh (Prompt) chuẩn hóa Đề Word bằng AI</h3>
+        <p>Nếu bạn có 1 file Word lộn xộn, hãy copy đoạn chữ dưới đây ném vào <b>ChatGPT</b> hoặc <b>Gemini</b> kèm
+            theo đề của bạn. Nó sẽ dọn dẹp sạch sẽ để bạn paste vào ô <i>Bóc Tách Tự Động</i> phía trên.</p>
+
+        <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau của tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
+Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
+
+Câu [Số thứ tự]: [Nội dung câu hỏi]
+A. [Đáp án A]
+B. [Đáp án B]
+C. [Đáp án C]
+D. [Đáp án D]
+Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
+
+Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu $. Ví dụ: $x^2 + y^2$.
+không được đưa phần trích nguồn vào đề nữa
+
+Dưới đây là đề thi của tôi:
+[Dán đề thi Word của bạn vào đây]</div>
+        <button class="btn btn-success" onclick="copyPrompt()">📋 COPY LỆNH NÀY</button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isVip = urlParams.get('vip') !== 'false';
+
+        let questionBank = JSON.parse(localStorage.getItem('quiz_questions')) || [];
+
+        window.onload = () => {
+            if (!isVip && questionBank.length >= 5) {
+                document.getElementById('free-banner').style.display = 'block';
+            }
+        };
+
+        function goBack() {
+            window.location.href = '/dashboard' + (isVip ? '' : '?vip=false');
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('quiz_questions', JSON.stringify(questionBank));
+        }
+
+        function autoParseQuestions() {
+            if (!isVip && questionBank.length >= 5) {
+                return alert("🔒 BẢN GIỚI HẠN: Ngân hàng của bạn đã đầy (Tối đa 5 câu). Hãy nâng cấp PRO để thêm tiếp!");
+            }
+
+            const raw = document.getElementById('raw-text').value;
+            if (!raw.trim()) return alert("Vui lòng dán nội dung vào ô để bóc tách!");
+
+            const blocks = raw.split(/Câu\s*\d+\s*:/i).filter(b => b.trim().length > 0);
+            let successCount = 0;
+
+            blocks.forEach(block => {
+                if (!isVip && (questionBank.length + successCount) >= 5) return;
+
+                let text = block.trim();
+                let correct = 'A';
+
+                const ansMatch = text.match(/Đáp án:\s*([A-D])/i);
+                if (ansMatch) correct = ansMatch[1].toUpperCase();
+
+                const optA = text.match(/A\.(.*?)(?=B\.|C\.|D\.|Đáp án:|$)/is);
+                const optB = text.match(/B\.(.*?)(?=C\.|D\.|Đáp án:|$)/is);
+                const optC = text.match(/C\.(.*?)(?=D\.|Đáp án:|$)/is);
+                const optD = text.match(/D\.(.*?)(?=Đáp án:|$)/is);
+                const qTextMatch = text.split(/A\./i)[0];
+
+                if (qTextMatch && optA && optB) {
+                    questionBank.push({
+                        id: 'Q' + Date.now() + Math.random(),
+                        type: '4opts',
+                        text: qTextMatch.trim(),
+                        options: {
+                            A: optA[1].trim(),
+                            B: optB[1].trim(),
+                            C: optC ? optC[1].trim() : '',
+                            D: optD ? optD[1].trim() : ''
+                        },
+                        correct: correct
+                    });
+                    successCount++;
+                }
+            });
+
+            if (successCount > 0) {
+                saveToStorage();
+                document.getElementById('raw-text').value = '';
+                if (!isVip && (questionBank.length >= 5)) {
+                    alert(`🎉 Bóc tách thành công ${successCount} câu. Bạn đã chạm giới hạn 5 câu của bản Miễn phí!`);
+                } else {
+                    alert(`🎉 Bóc tách thành công ${successCount} câu hỏi và đã đưa vào Ngân hàng!`);
+                }
+            } else {
+                alert("Không nhận diện được câu hỏi nào. Hãy chắc chắn văn bản đúng chuẩn như trong phần Hướng Dẫn.");
+            }
+        }
+
+        function copyPrompt() {
+            const text = document.getElementById('ai-prompt').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Đã copy lệnh! Hãy dán vào ChatGPT/Gemini nhé.");
+            });
+        }
+    </script>
+</body>
+</html>
