@@ -1009,6 +1009,13 @@ Dưới đây là đề thi của tôi:
 
         function saveToStorage() {
             localStorage.setItem('quiz_questions', JSON.stringify(questionBank));
+            // [SỬA LỖI ĐỒNG BỘ]: Luôn lưu cả danh sách lớp mỗi khi lưu câu hỏi
+            // để Máy chiếu luôn đọc được dữ liệu MỚI NHẤT từ localStorage
+            const classTextEl = document.getElementById('class-list');
+            if (classTextEl) {
+                classList = classTextEl.value.split('\n').map(s => s.trim()).filter(s => s !== '');
+            }
+            localStorage.setItem('quiz_class', JSON.stringify(classList));
             renderQuestionList();
         }
 
@@ -1018,6 +1025,12 @@ Dưới đây là đề thi của tôi:
             localStorage.setItem('quiz_class', JSON.stringify(classList));
             alert("Đã lưu danh sách lớp vào bộ nhớ máy!");
         }
+
+        // [SỬA LỖI ĐỒNG BỘ]: Tự động lưu danh sách lớp khi người dùng gõ vào textarea
+        document.getElementById('class-list').addEventListener('input', function() {
+            classList = this.value.split('\n').map(s => s.trim()).filter(s => s !== '');
+            localStorage.setItem('quiz_class', JSON.stringify(classList));
+        });
 
         // ================= TÍNH NĂNG MỚI: LƯU / NẠP BÀI HỌC VỚI HỆ SINH THÁI MẸ =================
         function saveLessonToEcosystem() {

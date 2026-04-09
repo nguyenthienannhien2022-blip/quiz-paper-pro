@@ -223,11 +223,21 @@
         window.onload = () => { startCamera(); };
 
         // [MẤU CHỐT TỰ ĐỘNG Ở ĐÂY]
+        let syncTimeout = null;
         socket.on('connect', () => {
             socket.emit('join_room', roomCode);
 
             // Ngay khi kết nối thành công, điện thoại TỰ ĐỘNG phát lệnh gọi dữ liệu ngầm từ Laptop
             socket.emit('teacher_command', { room: roomCode, action: 'request_sync' });
+
+            // Nếu 5 giây không nhận được dữ liệu, cảnh báo người dùng
+            clearTimeout(syncTimeout);
+            syncTimeout = setTimeout(() => {
+                if (questionBank.length === 0) {
+                    statusElement.innerText = "⚠️ Chưa nhận được dữ liệu! Hãy mở Màn Hình Máy Chiếu trên Laptop trước.";
+                    statusElement.style.backgroundColor = "#e74c3c"; statusElement.style.color = "white";
+                }
+            }, 5000);
         });
 
         // KHI BẤM NÚT DỰ PHÒNG "TẢI DỮ LIỆU TỪ LAPTOP"
@@ -239,6 +249,7 @@
 
         // NHẬN DỮ LIỆU TỪ MÁY CHIẾU (LAPTOP) GỬI SANG
         socket.on('receive_sync_data', (data) => {
+            clearTimeout(syncTimeout);
             questionBank = data.questions;
             studentNamesList = data.students;
 
