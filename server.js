@@ -27,7 +27,7 @@ app.get('/hetgio.mp3', (req, res) => res.sendFile(path.join(__dirname, 'hetgio.m
 app.get('/tinh-gio-choi.mp3', (req, res) => res.sendFile(path.join(__dirname, 'tinh-gio-choi.mp3')));
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
+const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] }, maxHttpBufferSize: 1e8 });
 
 io.on('connection', (socket) => {
     console.log(`[+] Thiết bị kết nối (ID: ${socket.id})`);
