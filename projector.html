@@ -335,9 +335,9 @@
         const roomCode = urlParams.get('room') || 'DEMO';
         document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
 
-        // [QUAN TRỌNG ĐÃ PHỤC HỒI] Lấy dữ liệu từ Laptop
-        const localQuestions = JSON.parse(localStorage.getItem('quiz_questions')) || [];
-        const localClass = JSON.parse(localStorage.getItem('quiz_class')) || [];
+        // [QUAN TRỌNG ĐÃ PHỤC HỒI] Lấy dữ liệu từ Laptop, lấy trực tiếp để luôn cập nhật mới nhất
+        function getLocalQuestions() { return JSON.parse(localStorage.getItem('quiz_questions')) || []; }
+        function getLocalClass() { return JSON.parse(localStorage.getItem('quiz_class')) || []; }
 
         let studentSubmissions = {};
         let countdownInterval;
@@ -358,6 +358,7 @@
 
         // Hàm lấy tên học sinh
         function getStudentLabel(id) {
+            const localClass = getLocalClass();
             if (localClass[id - 1]) return localClass[id - 1];
             return `ID: ${id}`;
         }
@@ -368,13 +369,13 @@
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
             socket.emit('join_room', roomCode);
             // [QUAN TRỌNG ĐÃ PHỤC HỒI] Vừa bật lên là ném luôn dữ liệu sang điện thoại
-            socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: getLocalQuestions(), students: getLocalClass() });
         });
 
         // [QUAN TRỌNG ĐÃ PHỤC HỒI] Khi có điện thoại vừa quét mã vào phòng, bắn dữ liệu sang
         socket.on('device_joined', () => {
             console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
-            socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: getLocalQuestions(), students: getLocalClass() });
         });
 
         // XỬ LÝ KHI QUÉT THẺ - TỰ ĐỘNG TẠO Ô HỌC SINH MỚI
@@ -407,7 +408,7 @@
 
             // [QUAN TRỌNG ĐÃ PHỤC HỒI] Khi điện thoại bấm nút "Tải dữ liệu"
             if (data.action === 'request_sync') {
-                socket.emit('sync_data_to_phone', { room: roomCode, questions: localQuestions, students: localClass });
+                socket.emit('sync_data_to_phone', { room: roomCode, questions: getLocalQuestions(), students: getLocalClass() });
             }
 
             if (data.action !== 'show_leaderboard' && data.action !== 'request_sync') {
