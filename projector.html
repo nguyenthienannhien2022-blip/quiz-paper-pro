@@ -33,7 +33,6 @@
             position: relative;
         }
 
-        /* Hiệu ứng nhấp chuột bật loa */
         #audio-wakeup-overlay {
             position: absolute;
             top: 0;
@@ -294,7 +293,7 @@
             background: #f39c12;
         }
     </style>
-    <script src="https://quiz-paper-pro.onrender.com/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
@@ -335,9 +334,13 @@
         const roomCode = urlParams.get('room') || 'DEMO';
         document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
 
-        // [QUAN TRỌNG ĐÃ PHỤC HỒI] Lấy dữ liệu từ Laptop, lấy trực tiếp để luôn cập nhật mới nhất
-        function getLocalQuestions() { return JSON.parse(localStorage.getItem('quiz_questions')) || []; }
-        function getLocalClass() { return JSON.parse(localStorage.getItem('quiz_class')) || []; }
+        // [CẬP NHẬT QUAN TRỌNG]: Hàm này bắt buộc Máy chiếu phải moi dữ liệu TƯƠI nhất từ két sắt
+        function getFreshData() {
+            return {
+                questions: JSON.parse(localStorage.getItem('quiz_questions')) || [],
+                students: JSON.parse(localStorage.getItem('quiz_class')) || []
+            };
+        }
 
         let studentSubmissions = {};
         let countdownInterval;
@@ -350,65 +353,58 @@
 
         function stopAllAudio() { audioTinhGio.pause(); audioTinhGio.currentTime = 0; audioHetGio.pause(); audioHetGio.currentTime = 0; audioChucMung.pause(); audioChucMung.currentTime = 0; }
 
-        // Nhấp chuột bật loa
         document.getElementById('audio-wakeup-overlay').addEventListener('click', function () {
             this.style.opacity = '0'; this.style.visibility = 'hidden'; console.log("Hệ thống âm thanh đã sẵn sàng!");
             audioTip.play().catch(e => { });
         });
 
-        // Hàm lấy tên học sinh
+        // Hàm lấy tên học sinh (luôn lấy bản mới nhất)
         function getStudentLabel(id) {
-            const localClass = getLocalClass();
-            if (localClass[id - 1]) return localClass[id - 1];
+            const freshClass = getFreshData().students;
+            if (freshClass[id - 1]) return freshClass[id - 1];
             return `ID: ${id}`;
         }
 
-        const socket = io("https://quiz-paper-pro.onrender.com");
+        const socket = io();
 
         socket.on('connect', () => {
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
             socket.emit('join_room', roomCode);
-            // [QUAN TRỌNG ĐÃ PHỤC HỒI] Vừa bật lên là ném luôn dữ liệu sang điện thoại
-            socket.emit('sync_data_to_phone', { room: roomCode, questions: getLocalQuestions(), students: getLocalClass() });
+            // Gửi dữ liệu TƯƠI ngay khi bật
+            const fresh = getFreshData();
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
         });
 
-        // [QUAN TRỌNG ĐÃ PHỤC HỒI] Khi có điện thoại vừa quét mã vào phòng, bắn dữ liệu sang
         socket.on('device_joined', () => {
             console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
-            socket.emit('sync_data_to_phone', { room: roomCode, questions: getLocalQuestions(), students: getLocalClass() });
+            // Lấy dữ liệu TƯƠI MỚI gửi sang
+            const fresh = getFreshData();
+            socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
         });
 
-        // XỬ LÝ KHI QUÉT THẺ - TỰ ĐỘNG TẠO Ô HỌC SINH MỚI
         socket.on('update_projector', (data) => {
             const studentId = data.studentId;
-
-            // Nếu học sinh này đã nộp trước đó rồi (quét lại), chỉ cập nhật đáp án ảo, không tạo mới
             if (studentSubmissions[studentId]) {
                 studentSubmissions[studentId] = data.answer;
                 return;
             }
 
-            // Ghi nhận nộp bài
             studentSubmissions[studentId] = data.answer;
-
-            // Phát tiếng Típ "Điểm danh"
             audioTip.play().catch(e => { });
 
-            // TẠO MỚI VÀ CHÈN Ô HỌC SINH VÀO GRID
             const grid = document.getElementById('student-grid');
             const card = document.createElement('div');
             card.className = 'student-card';
             card.id = `student-${studentId}`;
             card.innerText = `${getStudentLabel(studentId)}\n✔️`;
-
             grid.appendChild(card);
         });
 
         socket.on('execute_command', (data) => {
-
-            // [QUAN TRỌNG ĐÃ PHỤC HỒI] Khi điện thoại bấm nút "Tải dữ liệu"
+            // [CẬP NHẬT QUAN TRỌNG]: Khi điện thoại bấm nút Tải Dữ Liệu, lấy dữ liệu TƯƠI gửi sang
             if (data.action === 'request_sync') {
-                socket.emit('sync_data_to_phone', { room: roomCode, questions: getLocalQuestions(), students: getLocalClass() });
+                const fresh = getFreshData();
+                socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
             }
 
             if (data.action !== 'show_leaderboard' && data.action !== 'request_sync') {
@@ -438,7 +434,6 @@
                 stopAllAudio(); clearInterval(countdownInterval);
                 document.getElementById('timer-container').style.display = 'none'; document.getElementById('timer-text').style.display = 'none';
 
-                // DỌN SẠCH GRID HỌC SINH VỀ TRẮNG TRƠN
                 studentSubmissions = {};
                 document.getElementById('student-grid').innerHTML = '';
 
