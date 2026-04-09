@@ -9,7 +9,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/cv.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/jcmellado/js-aruco/src/aruco.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://quiz-paper-pro.onrender.com/socket.io/socket.io.js"></script>
 
     <style>
         body {
@@ -178,7 +178,7 @@
 
         const videoElement = document.getElementById('video'); const canvasElement = document.getElementById('canvas');
         const context = canvasElement.getContext('2d', { willReadFrequently: true }); const statusElement = document.getElementById('status');
-        const socket = io(); const lastScannedTime = {}; let detector;
+        const socket = io("https://quiz-paper-pro.onrender.com"); const lastScannedTime = {}; let detector;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeepSound() { if (audioCtx.state === 'suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'square'; osc.frequency.setValueAtTime(880, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }

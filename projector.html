@@ -294,7 +294,7 @@
             background: #f39c12;
         }
     </style>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://quiz-paper-pro.onrender.com/socket.io/socket.io.js"></script>
 </head>
 
 <body>
@@ -363,7 +363,7 @@
             return `ID: ${id}`;
         }
 
-        const socket = io();
+        const socket = io("https://quiz-paper-pro.onrender.com");
 
         socket.on('connect', () => {
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
