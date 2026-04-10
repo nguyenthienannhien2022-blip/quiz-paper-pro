@@ -334,7 +334,28 @@
         const roomCode = urlParams.get('room') || 'DEMO';
         document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
 
-        // [CẬP NHẬT QUAN TRỌNG]: Hàm này bắt buộc Máy chiếu phải moi dữ liệu TƯƠI nhất từ két sắt
+        // [MỚI]: Lắng nghe dữ liệu Mẹ ném sang (nếu được mở bằng Tab mới từ Giáo Viên Pro)
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.action === 'LOAD_LESSON') {
+                const data = event.data.lessonData;
+                if (data) {
+                    if (data.questions) localStorage.setItem('quiz_questions', JSON.stringify(data.questions));
+                    if (data.classes) localStorage.setItem('quiz_class', JSON.stringify(data.classes));
+                    console.log("✅ Máy chiếu đã nhận bài học từ hệ sinh thái Mẹ!");
+
+                    // Cập nhật lại cho Server vì ta vừa nhận được dữ liệu mới
+                    const fresh = getFreshData();
+                    socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+                }
+            }
+        });
+
+        // Hú Mẹ xin bài học (nếu có)
+        setTimeout(() => {
+            if (window.opener) window.opener.postMessage({ action: 'REQUEST_LESSON' }, '*');
+            else if (window.parent !== window) window.parent.postMessage({ action: 'REQUEST_LESSON' }, '*');
+        }, 1000);
+
         function getFreshData() {
             return {
                 questions: JSON.parse(localStorage.getItem('quiz_questions')) || [],
@@ -345,7 +366,6 @@
         let studentSubmissions = {};
         let countdownInterval;
 
-        // Âm thanh
         const audioTinhGio = new Audio('/tinh-gio-choi.mp3'); audioTinhGio.loop = true;
         const audioHetGio = new Audio('/hetgio.mp3');
         const audioChucMung = new Audio('/chucmung.mp3');
@@ -358,7 +378,6 @@
             audioTip.play().catch(e => { });
         });
 
-        // Hàm lấy tên học sinh (luôn lấy bản mới nhất)
         function getStudentLabel(id) {
             const freshClass = getFreshData().students;
             if (freshClass[id - 1]) return freshClass[id - 1];
@@ -370,16 +389,30 @@
         socket.on('connect', () => {
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
             socket.emit('join_room', roomCode);
-            // Gửi dữ liệu TƯƠI ngay khi bật
+
+            // [BẢO VỆ CHỐNG RỖNG]: Chỉ ném dữ liệu lên Server nếu trong túi thực sự có dữ liệu
             const fresh = getFreshData();
-            socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+            if (fresh.questions.length > 0 || fresh.students.length > 0) {
+                socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+            }
         });
 
+        // [BẢO VỆ CHỐNG RỖNG 2]: Tương tự khi phát hiện điện thoại vào phòng
         socket.on('device_joined', () => {
             console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
-            // Lấy dữ liệu TƯƠI MỚI gửi sang
             const fresh = getFreshData();
-            socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+            if (fresh.questions.length > 0 || fresh.students.length > 0) {
+                socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+            }
+        });
+
+        // [MỚI]: Lắng nghe dữ liệu từ Server Thủ Kho (nếu túi mình đang rỗng)
+        socket.on('receive_sync_data', (data) => {
+            if (data && data.questions && data.questions.length > 0) {
+                localStorage.setItem('quiz_questions', JSON.stringify(data.questions));
+                localStorage.setItem('quiz_class', JSON.stringify(data.students));
+                console.log("📦 Máy chiếu đã nhận được dữ liệu từ Thủ Kho Server!");
+            }
         });
 
         socket.on('update_projector', (data) => {
@@ -401,10 +434,11 @@
         });
 
         socket.on('execute_command', (data) => {
-            // [CẬP NHẬT QUAN TRỌNG]: Khi điện thoại bấm nút Tải Dữ Liệu, lấy dữ liệu TƯƠI gửi sang
             if (data.action === 'request_sync') {
                 const fresh = getFreshData();
-                socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+                if (fresh.questions.length > 0 || fresh.students.length > 0) {
+                    socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+                }
             }
 
             if (data.action !== 'show_leaderboard' && data.action !== 'request_sync') {
