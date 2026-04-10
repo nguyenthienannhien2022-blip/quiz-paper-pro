@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Paper Pro - Hệ Thống Trắc Nghiệm QR</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+
     <style>
         :root {
             --primary: #4e54c8;
@@ -170,7 +173,7 @@
 
 <body>
     <div class="hero-title">🚀 Quiz Paper</div>
-    <div class="subtitle">Nền tảng Trắc nghiệm Thời gian thực dành cho Lớp học</div>
+    <div class="subtitle" id="app-subtitle">Nền tảng Trắc nghiệm Thời gian thực dành cho Lớp học</div>
     <div class="menu-grid">
         <button class="btn-main btn-play" onclick="openModal('playModal')">▶ BẮT ĐẦU CHƠI</button>
         <a href="/dashboard" class="btn-main btn-studio">⚙️ CÀI ĐẶT CÂU HỎI (STUDIO)</a>
@@ -222,6 +225,54 @@
     </div>
 
     <script>
+        // KẾT NỐI SOCKET VỚI SERVER
+        const socket = typeof io !== 'undefined' ? io() : null;
+
+        // ĐỌC TÍN HIỆU BẢN QUYỀN VIP TỪ APP MẸ
+        const urlParams = new URLSearchParams(window.location.search);
+        const isVip = urlParams.get('vip') !== 'false';
+        const vipQuery = isVip ? '' : '?vip=false';
+        const vipQueryParam = isVip ? '' : '&vip=false';
+
+        if (!isVip) {
+            document.getElementById('app-subtitle').innerHTML = '<span style="background:#e74c3c; padding:4px 10px; border-radius:8px;">Bản Giới Hạn Tính Năng</span>';
+        }
+
+        // ========================================================
+        // ĐÔI TAY BẮT DỮ LIỆU & CƠ CHẾ "BẮT TAY" (HANDSHAKE)
+        // ========================================================
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.action === 'LOAD_LESSON') {
+                const data = event.data.lessonData;
+                if (data) {
+                    // Cất gọn dữ liệu vào bộ nhớ máy tính để làm vốn
+                    if (data.questions) localStorage.setItem('quiz_questions', JSON.stringify(data.questions));
+                    if (data.classes) localStorage.setItem('quiz_class', JSON.stringify(data.classes));
+
+                    // Hiệu ứng UX: Đổi nút Play thành màu xanh
+                    const playBtn = document.querySelector('.btn-play');
+                    if (playBtn) {
+                        playBtn.innerHTML = '✅ ĐÃ NẠP BÀI TỪ ĐÁM MÂY - BẮT ĐẦU CHƠI';
+                        playBtn.style.background = '#27ae60';
+                        playBtn.style.boxShadow = '0 0 20px rgba(39, 174, 96, 0.8)';
+                    }
+                    console.log("✅ Hệ sinh thái Mẹ đã nạp dữ liệu thành công!");
+                }
+            }
+        });
+
+        // Nghỉ 1 giây cho tỉnh táo rồi hú Mẹ ném dữ liệu xuống
+        setTimeout(() => {
+            if (window.opener) {
+                window.opener.postMessage({ action: 'REQUEST_LESSON' }, '*');
+            } else if (window.parent !== window) {
+                window.parent.postMessage({ action: 'REQUEST_LESSON' }, '*');
+            }
+        }, 1000);
+
+        // ========================================================
+        // GIAO DIỆN & CẬP NHẬT MÃ PHÒNG
+        // ========================================================
         function openModal(id) { document.getElementById(id).classList.add('active'); updateRoom(); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         window.onclick = function (e) { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); }
@@ -229,20 +280,31 @@
         function updateRoom() {
             let room = document.getElementById('room-code').value.trim().toUpperCase();
             if (!room) room = "DEMO";
-            const scannerUrl = window.location.origin + '/scanner?room=' + encodeURIComponent(room);
+
+            // Cập nhật lại đường link QR Code
+            const scannerUrl = window.location.origin + '/scanner?room=' + encodeURIComponent(room) + vipQueryParam;
             document.getElementById('qr-code-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(scannerUrl);
+
+            // [SIÊU NĂNG LỰC]: Bơm thẳng dữ liệu tươi từ bộ nhớ máy tính lên Server
+            if (socket) {
+                const q = JSON.parse(localStorage.getItem('quiz_questions')) || [];
+                const c = JSON.parse(localStorage.getItem('quiz_class')) || [];
+                if (q.length > 0 || c.length > 0) {
+                    socket.emit('sync_data_to_phone', { room: room, questions: q, students: c });
+                }
+            }
         }
 
         function openProjector() {
             let room = document.getElementById('room-code').value.trim().toUpperCase();
             if (!room) return alert("Vui lòng nhập Mã Phòng!");
-            window.open('/projector?room=' + encodeURIComponent(room), '_blank');
+            window.open('/projector?room=' + encodeURIComponent(room) + vipQueryParam, '_blank');
         }
 
         function openScanner() {
             let room = document.getElementById('room-code').value.trim().toUpperCase();
             if (!room) return alert("Vui lòng nhập Mã Phòng!");
-            window.open('/scanner?room=' + encodeURIComponent(room), '_blank');
+            window.open('/scanner?room=' + encodeURIComponent(room) + vipQueryParam, '_blank');
         }
     </script>
 </body>
