@@ -8,7 +8,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -34,9 +36,9 @@
             --text-muted: #94a3b8;
             --border: #e2e8f0;
             --border-light: #f1f5f9;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
             --radius: 16px;
             --radius-sm: 10px;
             --radius-xs: 6px;
@@ -57,10 +59,22 @@
         }
 
         /* ============ SCROLLBAR ============ */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
 
         /* ============ TOP BAR ============ */
         .top-bar {
@@ -85,12 +99,12 @@
             font-weight: 800;
             color: #fff;
             letter-spacing: -0.5px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .top-bar .subtitle {
             font-size: 13px;
-            color: rgba(255,255,255,0.75);
+            color: rgba(255, 255, 255, 0.75);
             font-weight: 500;
         }
 
@@ -118,7 +132,7 @@
 
         .top-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .top-btn.btn-cloud {
@@ -132,17 +146,17 @@
         }
 
         .top-btn.btn-guide {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.25);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .top-btn.btn-home {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.25);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         /* ============ FREE BANNER ============ */
@@ -360,10 +374,21 @@
             margin-bottom: 8px;
         }
 
-        .option-card:nth-child(1) .option-letter { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .option-card:nth-child(2) .option-letter { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .option-card:nth-child(3) .option-letter { background: linear-gradient(135deg, #10b981, #059669); }
-        .option-card:nth-child(4) .option-letter { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .option-card:nth-child(1) .option-letter {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .option-card:nth-child(2) .option-letter {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .option-card:nth-child(3) .option-letter {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .option-card:nth-child(4) .option-letter {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
 
         .option-card .form-input {
             padding: 9px 12px;
@@ -577,8 +602,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .q-item:hover {
@@ -755,7 +787,7 @@
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
         }
 
         .close-btn {
@@ -793,12 +825,15 @@
         }
 
         /* Hidden file input */
-        .hidden-file { display: none; }
+        .hidden-file {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
-    <div id="free-banner">🔒 BẢN GIỚI HẠN: Bạn chỉ được tạo tối đa 5 câu hỏi. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa vô hạn!</div>
+    <div id="free-banner">🔒 BẢN GIỚI HẠN: Bạn chỉ được tạo tối đa 5 câu hỏi. Nâng cấp PRO trên Hệ Sinh Thái để mở khóa
+        vô hạn!</div>
 
     <!-- ========== TOP BAR ========== -->
     <div class="top-bar">
@@ -809,7 +844,8 @@
         <div class="top-bar-actions">
             <button class="top-btn btn-cloud" onclick="saveLessonToEcosystem()">☁️ Lưu lên Hệ Sinh Thái</button>
             <button class="top-btn btn-ai" onclick="goToAutoParser()">🤖 Bóc Tách & Lệnh AI</button>
-            <button class="top-btn btn-guide" onclick="document.getElementById('guideModal').classList.add('active')">💡 Cẩm Nang</button>
+            <button class="top-btn btn-guide" onclick="document.getElementById('guideModal').classList.add('active')">💡
+                Cẩm Nang</button>
             <button class="top-btn btn-home" onclick="goHome()">🏠 Trang Chủ</button>
         </div>
     </div>
@@ -819,7 +855,8 @@
         <!-- ========== 1. SOẠN THẢO CÂU HỎI + XEM TRƯỚC ========== -->
         <div class="panel">
             <div class="panel-header">
-                <div class="icon-badge" style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); color: var(--primary);">📝</div>
+                <div class="icon-badge"
+                    style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); color: var(--primary);">📝</div>
                 <h2>Soạn Thảo / Chỉnh Sửa Câu Hỏi</h2>
             </div>
 
@@ -831,12 +868,19 @@
 
                         <!-- Câu hỏi -->
                         <div class="form-group">
-                            <label class="form-label">📖 Nội dung câu hỏi <span style="font-weight:400; text-transform:none; font-size:12px; color:var(--text-muted);">(Toán học kẹp trong $...$)</span></label>
-                            <textarea id="q-text" class="form-textarea" rows="3" placeholder="Nhập nội dung câu hỏi..."></textarea>
+                            <label class="form-label">📖 Nội dung câu hỏi <span
+                                    style="font-weight:400; text-transform:none; font-size:12px; color:var(--text-muted);">(Toán
+                                    học kẹp trong $...$)</span></label>
+                            <textarea id="q-text" class="form-textarea" rows="3"
+                                placeholder="Nhập nội dung câu hỏi..."></textarea>
                             <div class="media-controls">
-                                <input type="text" id="q-img-url" class="form-input" placeholder="🔗 Dán link ảnh minh họa...">
-                                <button class="upload-btn" onclick="document.getElementById('q-img-file').click()">📷 Tải ảnh</button>
-                                <input type="file" id="q-img-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'q-img-url')">
+                                <input type="text" id="q-img-url" class="form-input"
+                                    placeholder="🔗 Dán link ảnh minh họa...">
+                                <button class="upload-btn" onclick="document.getElementById('q-img-file').click()">📷
+                                    Tải ảnh</button>
+                                <button class="upload-btn" onclick="document.getElementById('q-img-url').value=''; updatePreview();" style="background: linear-gradient(135deg, #ef4444, #dc2626);" title="Xóa ảnh">🗑️</button>
+                                <input type="file" id="q-img-file" class="hidden-file" accept="image/*"
+                                    onchange="handleImageUpload(event, 'q-img-url')">
                             </div>
                             <img id="q-img-preview" class="img-preview-thumb" style="display:none;">
                         </div>
@@ -848,41 +892,61 @@
                                 <!-- A -->
                                 <div class="option-card">
                                     <span class="option-letter">A</span>
-                                    <input type="text" id="opt-A" class="form-input live-input" placeholder="Phương án A">
+                                    <input type="text" id="opt-A" class="form-input live-input"
+                                        placeholder="Phương án A">
                                     <div class="media-controls">
-                                        <input type="text" id="opt-A-img" class="form-input" placeholder="🔗 Link ảnh A">
-                                        <button class="upload-btn" onclick="document.getElementById('opt-A-file').click()">📷</button>
-                                        <input type="file" id="opt-A-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-A-img')">
+                                        <input type="text" id="opt-A-img" class="form-input"
+                                            placeholder="🔗 Link ảnh A">
+                                        <button class="upload-btn"
+                                            onclick="document.getElementById('opt-A-file').click()">📷</button>
+                                        <button class="upload-btn" onclick="document.getElementById('opt-A-img').value=''; updatePreview();" style="background: linear-gradient(135deg, #ef4444, #dc2626);" title="Xóa ảnh A">🗑️</button>
+                                        <input type="file" id="opt-A-file" class="hidden-file" accept="image/*"
+                                            onchange="handleImageUpload(event, 'opt-A-img')">
                                     </div>
                                 </div>
                                 <!-- B -->
                                 <div class="option-card">
                                     <span class="option-letter">B</span>
-                                    <input type="text" id="opt-B" class="form-input live-input" placeholder="Phương án B">
+                                    <input type="text" id="opt-B" class="form-input live-input"
+                                        placeholder="Phương án B">
                                     <div class="media-controls">
-                                        <input type="text" id="opt-B-img" class="form-input" placeholder="🔗 Link ảnh B">
-                                        <button class="upload-btn" onclick="document.getElementById('opt-B-file').click()">📷</button>
-                                        <input type="file" id="opt-B-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-B-img')">
+                                        <input type="text" id="opt-B-img" class="form-input"
+                                            placeholder="🔗 Link ảnh B">
+                                        <button class="upload-btn"
+                                            onclick="document.getElementById('opt-B-file').click()">📷</button>
+                                        <button class="upload-btn" onclick="document.getElementById('opt-B-img').value=''; updatePreview();" style="background: linear-gradient(135deg, #ef4444, #dc2626);" title="Xóa ảnh B">🗑️</button>
+                                        <input type="file" id="opt-B-file" class="hidden-file" accept="image/*"
+                                            onchange="handleImageUpload(event, 'opt-B-img')">
                                     </div>
                                 </div>
                                 <!-- C -->
                                 <div class="option-card">
                                     <span class="option-letter">C</span>
-                                    <input type="text" id="opt-C" class="form-input live-input" placeholder="Phương án C">
+                                    <input type="text" id="opt-C" class="form-input live-input"
+                                        placeholder="Phương án C">
                                     <div class="media-controls">
-                                        <input type="text" id="opt-C-img" class="form-input" placeholder="🔗 Link ảnh C">
-                                        <button class="upload-btn" onclick="document.getElementById('opt-C-file').click()">📷</button>
-                                        <input type="file" id="opt-C-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-C-img')">
+                                        <input type="text" id="opt-C-img" class="form-input"
+                                            placeholder="🔗 Link ảnh C">
+                                        <button class="upload-btn"
+                                            onclick="document.getElementById('opt-C-file').click()">📷</button>
+                                        <button class="upload-btn" onclick="document.getElementById('opt-C-img').value=''; updatePreview();" style="background: linear-gradient(135deg, #ef4444, #dc2626);" title="Xóa ảnh C">🗑️</button>
+                                        <input type="file" id="opt-C-file" class="hidden-file" accept="image/*"
+                                            onchange="handleImageUpload(event, 'opt-C-img')">
                                     </div>
                                 </div>
                                 <!-- D -->
                                 <div class="option-card">
                                     <span class="option-letter">D</span>
-                                    <input type="text" id="opt-D" class="form-input live-input" placeholder="Phương án D">
+                                    <input type="text" id="opt-D" class="form-input live-input"
+                                        placeholder="Phương án D">
                                     <div class="media-controls">
-                                        <input type="text" id="opt-D-img" class="form-input" placeholder="🔗 Link ảnh D">
-                                        <button class="upload-btn" onclick="document.getElementById('opt-D-file').click()">📷</button>
-                                        <input type="file" id="opt-D-file" class="hidden-file" accept="image/*" onchange="handleImageUpload(event, 'opt-D-img')">
+                                        <input type="text" id="opt-D-img" class="form-input"
+                                            placeholder="🔗 Link ảnh D">
+                                        <button class="upload-btn"
+                                            onclick="document.getElementById('opt-D-file').click()">📷</button>
+                                        <button class="upload-btn" onclick="document.getElementById('opt-D-img').value=''; updatePreview();" style="background: linear-gradient(135deg, #ef4444, #dc2626);" title="Xóa ảnh D">🗑️</button>
+                                        <input type="file" id="opt-D-file" class="hidden-file" accept="image/*"
+                                            onchange="handleImageUpload(event, 'opt-D-img')">
                                     </div>
                                 </div>
                             </div>
@@ -918,14 +982,17 @@
         <!-- ========== 2. NGÂN HÀNG CÂU HỎI ========== -->
         <div class="panel">
             <div class="panel-header">
-                <div class="icon-badge" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e;">📚</div>
+                <div class="icon-badge" style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e;">
+                    📚</div>
                 <h2>Ngân Hàng Câu Hỏi</h2>
                 <span class="badge" id="q-count-badge"><span id="q-count">0</span> câu</span>
             </div>
             <div class="bank-toolbar">
                 <button class="bank-btn excel-export" onclick="exportQuestionsExcel()">📥 Xuất Excel</button>
-                <input type="file" id="import-q-file" class="hidden-file" accept=".xlsx, .xls" onchange="importQuestionsExcel(event)">
-                <button class="bank-btn excel-import" onclick="document.getElementById('import-q-file').click()">📂 Nhập Excel</button>
+                <input type="file" id="import-q-file" class="hidden-file" accept=".xlsx, .xls"
+                    onchange="importQuestionsExcel(event)">
+                <button class="bank-btn excel-import" onclick="document.getElementById('import-q-file').click()">📂 Nhập
+                    Excel</button>
                 <button class="bank-btn clear-all" onclick="clearAllQuestions()">🗑️ Xóa sạch</button>
             </div>
             <ul class="question-list" id="q-list"></ul>
@@ -934,11 +1001,13 @@
         <!-- ========== 3. DANH SÁCH LỚP HỌC ========== -->
         <div class="panel class-panel">
             <div class="panel-header">
-                <div class="icon-badge" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46;">🧑‍🎓</div>
+                <div class="icon-badge" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46;">
+                    🧑‍🎓</div>
                 <h2>Danh Sách Lớp Học</h2>
             </div>
             <div class="panel-body">
-                <textarea id="class-list" class="form-textarea" rows="5" placeholder="Nguyễn Văn A&#10;Trần Thị B&#10;..."></textarea>
+                <textarea id="class-list" class="form-textarea" rows="5"
+                    placeholder="Nguyễn Văn A&#10;Trần Thị B&#10;..."></textarea>
                 <button class="class-save-btn" onclick="saveClassList()">💾 Lưu Danh Sách Lớp</button>
             </div>
         </div>
@@ -947,34 +1016,47 @@
     <!-- ========== MODAL HƯỚNG DẪN ========== -->
     <div id="guideModal" class="modal-overlay">
         <div class="modal-content">
-            <span class="close-btn" onclick="document.getElementById('guideModal').classList.remove('active')">&times;</span>
+            <span class="close-btn"
+                onclick="document.getElementById('guideModal').classList.remove('active')">&times;</span>
             <h2 style="color: var(--primary-dark); margin-top: 0; font-size: 22px;">💡 Cẩm Nang Toán Học & AI</h2>
 
             <h3 style="color: #2563eb; margin-top: 20px;">1. Hướng dẫn gõ công thức Toán học</h3>
-            <p style="color: var(--text-secondary); line-height: 1.7;">Ứng dụng sử dụng chuẩn <b>LaTeX</b>. Để công thức hiển thị đẹp mắt trên Tivi, hãy làm theo quy tắc sau:</p>
+            <p style="color: var(--text-secondary); line-height: 1.7;">Ứng dụng sử dụng chuẩn <b>LaTeX</b>. Để công thức
+                hiển thị đẹp mắt trên Tivi, hãy làm theo quy tắc sau:</p>
             <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: 20px;">
-                <li><b>Công thức nằm cùng dòng chữ:</b> Kẹp giữa 2 dấu <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$</code>. Ví dụ: <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">Giải phương trình $x^2 - 4 = 0$</code>.</li>
-                <li><b>Công thức đứng độc lập giữa màn hình to:</b> Kẹp giữa 2 dấu <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$$</code>. Ví dụ: <code style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$$\int_{0}^{1} x^2 dx$$</code>.</li>
+                <li><b>Công thức nằm cùng dòng chữ:</b> Kẹp giữa 2 dấu <code
+                        style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$</code>. Ví dụ: <code
+                        style="background:#eef2ff; padding:2px 6px; border-radius:4px;">Giải phương trình $x^2 - 4 = 0$</code>.
+                </li>
+                <li><b>Công thức đứng độc lập giữa màn hình to:</b> Kẹp giữa 2 dấu <code
+                        style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$$</code>. Ví dụ: <code
+                        style="background:#eef2ff; padding:2px 6px; border-radius:4px;">$$\int_{0}^{1} x^2 dx$$</code>.
+                </li>
             </ul>
 
             <h3 style="color: #d97706; margin-top: 20px;">2. Câu lệnh (Prompt) chuẩn hóa Đề Word bằng AI</h3>
-            <p style="color: var(--text-secondary); line-height: 1.7;">Nếu bạn có 1 file Word lộn xộn, hãy copy đoạn chữ dưới đây ném vào <b>ChatGPT</b> hoặc <b>Gemini</b> kèm theo đề của bạn. Nó sẽ dọn dẹp sạch sẽ để bạn paste vào ô <i>Bóc Tách Tự Động</i>.</p>
+            <p style="color: var(--text-secondary); line-height: 1.7;">Nếu bạn có 1 file Word lộn xộn, hãy copy đoạn chữ
+                dưới đây ném vào <b>ChatGPT</b> hoặc <b>Gemini</b> kèm theo đề của bạn. Nó sẽ dọn dẹp sạch sẽ để bạn
+                paste vào ô <i>Bóc Tách Tự Động</i>.</p>
 
-            <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau của tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
-Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
+            <div class="prompt-box" id="ai-prompt">Đóng vai một chuyên gia giáo dục, hãy chuyển đổi văn bản đề thi sau
+                của tôi thành cấu trúc chuẩn xác như mẫu dưới đây.
+                Tuyệt đối không giải thích thêm, không thay đổi nội dung, chỉ sắp xếp lại đúng cấu trúc này:
 
-Câu [Số thứ tự]: [Nội dung câu hỏi]
-A. [Đáp án A]
-B. [Đáp án B]
-C. [Đáp án C]
-D. [Đáp án D]
-Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
+                Câu [Số thứ tự]: [Nội dung câu hỏi]
+                A. [Đáp án A]
+                B. [Đáp án B]
+                C. [Đáp án C]
+                D. [Đáp án D]
+                Đáp án: [Chữ cái A, B, C hoặc D của đáp án đúng]
 
-Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu $. Ví dụ: $x^2 + y^2$.
+                Lưu ý quan trọng: Toàn bộ công thức toán học phải được chuyển sang định dạng LaTeX và kẹp trong cặp dấu
+                $. Ví dụ: $x^2 + y^2$.
 
-Dưới đây là đề thi của tôi:
-[Dán đề thi Word của bạn vào đây]</div>
-            <button class="bank-btn excel-export" style="width:100%; justify-content:center; padding: 12px;" onclick="copyPrompt()">📋 Copy Lệnh Này</button>
+                Dưới đây là đề thi của tôi:
+                [Dán đề thi Word của bạn vào đây]</div>
+            <button class="bank-btn excel-export" style="width:100%; justify-content:center; padding: 12px;"
+                onclick="copyPrompt()">📋 Copy Lệnh Này</button>
         </div>
     </div>
 
@@ -1027,7 +1109,7 @@ Dưới đây là đề thi của tôi:
         }
 
         // [SỬA LỖI ĐỒNG BỘ]: Tự động lưu danh sách lớp khi người dùng gõ vào textarea
-        document.getElementById('class-list').addEventListener('input', function() {
+        document.getElementById('class-list').addEventListener('input', function () {
             classList = this.value.split('\n').map(s => s.trim()).filter(s => s !== '');
             localStorage.setItem('quiz_class', JSON.stringify(classList));
         });
@@ -1072,6 +1154,10 @@ Dưới đây là đề thi của tôi:
                     }
                     saveToStorage();
                     localStorage.setItem('quiz_class', JSON.stringify(classList));
+
+                    // --- 2 DÒNG MỚI THÊM VÀO ĐỂ ÉP ỨNG DỤNG CON THỨC TỈNH ---
+                    renderQuestionList();
+                    alert("✅ Hệ sinh thái Mẹ đã nạp dữ liệu thành công! Thầy/cô hãy bấm nút 'Mở Tab Mới' bên ngoài màn hình để bắt đầu trình chiếu nhé.");
                 }
             }
         });
@@ -1114,7 +1200,7 @@ Dưới đây là đề thi của tôi:
             const optCImg = document.getElementById('opt-C-img').value;
             const optDImg = document.getElementById('opt-D-img').value;
 
-            if (!qText && !optA.replace('...','') && !optB.replace('...','')) {
+            if (!qText && !optA.replace('...', '') && !optB.replace('...', '')) {
                 previewEl.innerHTML = '<div class="preview-empty">Gõ nội dung bên trái để xem trước tại đây...</div>';
                 return;
             }
