@@ -334,16 +334,24 @@
         const roomCode = urlParams.get('room') || 'DEMO';
         document.getElementById('room-title').innerText = `📊 Phòng: ${roomCode}`;
 
-        // [MỚI]: Lắng nghe dữ liệu Mẹ ném sang (nếu được mở bằng Tab mới từ Giáo Viên Pro)
+        // ========================================================
+        // [CỰC KỲ QUAN TRỌNG]: CHỐT CHẶN AN TOÀN BẢO MẬT
+        // ========================================================
+        // Biến này để đảm bảo Máy chiếu CHỈ ĐƯỢC PHÉP gửi dữ liệu hỗ trợ điện thoại 
+        // NẾU VÀ CHỈ NẾU nó đã nhận được gói dữ liệu TƯƠI MỚI từ Hệ sinh thái Mẹ hoặc Thủ kho.
+        let hasReceivedFreshData = false;
+
+        // Lắng nghe gói dữ liệu Mẹ ném sang khi vừa mở Tab mới
         window.addEventListener('message', (event) => {
             if (event.data && event.data.action === 'LOAD_LESSON') {
                 const data = event.data.lessonData;
                 if (data) {
+                    hasReceivedFreshData = true; // Kích hoạt cờ an toàn
                     if (data.questions) localStorage.setItem('quiz_questions', JSON.stringify(data.questions));
                     if (data.classes) localStorage.setItem('quiz_class', JSON.stringify(data.classes));
-                    console.log("✅ Máy chiếu đã nhận bài học từ hệ sinh thái Mẹ!");
+                    console.log("✅ Máy chiếu đã nhận bài học siêu tươi từ Hệ sinh thái Mẹ!");
 
-                    // Cập nhật lại cho Server vì ta vừa nhận được dữ liệu mới
+                    // Lúc này mới được phép cập nhật lên Server
                     const fresh = getFreshData();
                     socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
                 }
@@ -390,28 +398,28 @@
             document.getElementById('connection-status').innerHTML = "🟢 Đã kết nối!";
             socket.emit('join_room', roomCode);
 
-            // [BẢO VỆ CHỐNG RỖNG]: Chỉ ném dữ liệu lên Server nếu trong túi thực sự có dữ liệu
-            const fresh = getFreshData();
-            if (fresh.questions.length > 0 || fresh.students.length > 0) {
-                socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
-            }
+            // XÓA BỎ HOÀN TOÀN TÍNH NĂNG TỰ GỬI DỮ LIỆU Ở ĐÂY ĐỂ TRÁNH GHI ĐÈ
         });
 
-        // [BẢO VỆ CHỐNG RỖNG 2]: Tương tự khi phát hiện điện thoại vào phòng
         socket.on('device_joined', () => {
-            console.log("Phát hiện điện thoại vào phòng, đang đồng bộ dữ liệu...");
-            const fresh = getFreshData();
-            if (fresh.questions.length > 0 || fresh.students.length > 0) {
+            // [BẢO VỆ CHỐNG TẨY NÃO ĐIỆN THOẠI]: 
+            // Chỉ gửi dữ liệu nếu Máy chiếu chắc chắn bản thân đang cầm bản dữ liệu mới nhất
+            if (hasReceivedFreshData) {
+                console.log("Phát hiện điện thoại vào phòng, đang lấy dữ liệu xịn đồng bộ...");
+                const fresh = getFreshData();
                 socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+            } else {
+                console.log("Phát hiện điện thoại, nhưng Máy chiếu chưa có dữ liệu TƯƠI nên không gửi để tránh ghi đè.");
             }
         });
 
-        // [MỚI]: Lắng nghe dữ liệu từ Server Thủ Kho (nếu túi mình đang rỗng)
+        // Lắng nghe dữ liệu từ Server Thủ Kho ném xuống
         socket.on('receive_sync_data', (data) => {
             if (data && data.questions && data.questions.length > 0) {
+                hasReceivedFreshData = true; // Kích hoạt cờ an toàn vì dữ liệu từ Server là dữ liệu chuẩn
                 localStorage.setItem('quiz_questions', JSON.stringify(data.questions));
                 localStorage.setItem('quiz_class', JSON.stringify(data.students));
-                console.log("📦 Máy chiếu đã nhận được dữ liệu từ Thủ Kho Server!");
+                console.log("📦 Máy chiếu đã cập nhật dữ liệu TƯƠI từ Thủ Kho Server!");
             }
         });
 
@@ -434,10 +442,14 @@
         });
 
         socket.on('execute_command', (data) => {
+            // Nếu điện thoại hú xin đồng bộ
             if (data.action === 'request_sync') {
-                const fresh = getFreshData();
-                if (fresh.questions.length > 0 || fresh.students.length > 0) {
-                    socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+                // Máy chiếu CHỈ ĐƯỢC TRẢ LỜI ĐIỆN THOẠI nếu nó cầm dữ liệu thật sự tươi
+                if (hasReceivedFreshData) {
+                    const fresh = getFreshData();
+                    if (fresh.questions.length > 0 || fresh.students.length > 0) {
+                        socket.emit('sync_data_to_phone', { room: roomCode, questions: fresh.questions, students: fresh.students });
+                    }
                 }
             }
 
